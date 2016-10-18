@@ -76,9 +76,9 @@
   (reduce #(conj %1 (map %2)) [] ks))
 
 (defn load-all-data [device-id index data]
-  ; poladit strankovani, toto skace prvek 1000? a nasobky...
-  (let [page (extract-data-from-response (fetch-device-data device-id 10 (* index 10)))]
-    (if (or (< 5 index) (< 10 (count page)))
+  "load data by 1000 at a time with 1 second delay"
+  (let [page (extract-data-from-response (fetch-device-data device-id 1000 (* index 1000)))]
+    (if (> 1000 (count page))
       (concat data page)
       (do
         (Thread/sleep 1000)
@@ -87,12 +87,28 @@
     )
   )
 
+(defn parse-payload [model raw]
+  (let [payloadHex (:payloadHex raw)]
+    (try
+      (conj {:timestamp (:timestamp raw)} (disp/parse-payload model payloadHex))
+      (catch Throwable e
+        (println (str "Caught e " e " for payload #" payloadHex "#"))
+        )
+      ))
+  )
+
 (defn parse-data [model rawData]
-  (map (fn [raw] (conj {:timestamp (:timestamp raw)} (disp/parse-payload model (:payloadHex raw)))) rawData))
+  (let [xf (comp (map (fn [raw] (parse-payload model raw)))
+                 (remove nil?))]
+    (into [] xf rawData)
+    )
+  )
 
 (defn export-device-data [model device-id]
   "export all data for device into csv file"
   (let [data (parse-data model (load-all-data device-id 0 []))]
-    (exp/write-to-csv (str device-id ".csv") (concat [(disp/get-column-names model)] (map #(select-values %1 (map keyword (disp/get-column-names model))) data)))
+    (exp/write-to-csv (str device-id ".csv")
+                      (concat [(disp/get-column-names model)]
+                              (map #(select-values %1 (map keyword (disp/get-column-names model))) data)))
     )
   )
