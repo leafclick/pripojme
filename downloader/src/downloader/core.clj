@@ -94,7 +94,8 @@
       (catch Throwable e
         (println (str "Caught e " e " for payload #" payloadHex "#"))
         )
-      ))
+      )
+    )
   )
 
 (defn parse-data [model rawData]
@@ -107,8 +108,15 @@
 (defn export-device-data [model device-id]
   "export all data for device into csv file"
   (let [data (parse-data model (load-all-data device-id 0 []))]
-    (exp/write-to-csv (str device-id ".csv")
+    (exp/write-to-csv (str model "-" device-id ".csv")
                       (concat [(disp/get-column-names model)]
                               (map #(select-values %1 (map keyword (disp/get-column-names model))) data)))
+    )
+  )
+
+(defn export-project-devices-data [project-id]
+  "export all data for all devices from project"
+  (let [devices ((:body (fetch-devices project-id)) "records")]
+    (map #(export-device-data (%1 "model") (%1 "devEUI")) devices)
     )
   )
