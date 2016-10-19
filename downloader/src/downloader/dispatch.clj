@@ -2,6 +2,7 @@
   (:require [downloader.solidus-tech-dth :as dth]
             [downloader.rising-hf-sensor :as rhf]
             [downloader.logarex :as lgx]
+            [downloader.adeunis-hf :as ade]
             [downloader.develict-desense :as des]))
 
 (defmulti get-column-names (fn [x] x))
@@ -10,7 +11,7 @@
   (dth/dth-header))
 
 (defmethod get-column-names "ARF8084BA" [_]
-  (throw (ex-info "Not yet implemented!" {})))
+  (ade/adeunis-hf-header))
 
 (defmethod get-column-names "DeSense" [_]
   (des/desens-header))
@@ -41,7 +42,7 @@
   (dth/parse-dth payload))
 
 (defmethod parse-payload "ARF8084BA" [_ payload]
-  (throw (ex-info "Not yet implemented!" {})))
+  (ade/parse-adeunis-hf payload))
 
 (defmethod parse-payload "DeSense" [_ payload]
   (des/parse-desens payload))
