@@ -22,6 +22,9 @@
 (defmethod get-column-names "DeSenseSoil" [_]
   (des/desens-soil-header))
 
+(defmethod get-column-names "DeSenseNoise" [_]
+  (des/desens-noise-header))
+
 (defmethod get-column-names "DeSenseLight" [_]
   (des/desens-light-header))
 
@@ -52,6 +55,9 @@
 
 (defmethod parse-payload "DeSenseSoil" [_ payload]
   (des/parse-desens-soil payload))
+
+(defmethod parse-payload "DeSenseNoise" [_ payload]
+  (des/parse-desens-noise payload))
 
 (defmethod parse-payload "DeSenseLight" [_ payload]
   (des/parse-desens-light payload))

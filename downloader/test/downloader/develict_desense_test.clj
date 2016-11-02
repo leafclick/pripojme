@@ -57,7 +57,7 @@
   (testing "full parse test"
     (let [resp (parse-desens-light "04ff870d7a0b35")]
       (is (= {:battery 3450
-              :light   2.869
+              :light   2869
               :rssi    -1
               :snr     -121} resp))))
   )

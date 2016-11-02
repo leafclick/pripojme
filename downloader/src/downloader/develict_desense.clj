@@ -25,13 +25,24 @@
 (defn parse-light [payload]
   "Light in lx"
   (let [hex (subs payload 10 14)]
-    (parse-hex-and-divide hex)
+    (Integer/parseInt hex 16)
     )
   )
 
 ; deleni 100 pridano na zaklade dat a odporuje manualu
 (defn parse-moisture [payload]
   "Moisture in %"
+  (let [hex (subs payload 10 14)]
+    (double
+      (/
+        (Integer/parseInt hex 16)
+        100
+        )
+      )
+    )
+  )
+(defn parse-noise [payload]
+  "Noise in db"
   (let [hex (subs payload 10 14)]
     (double
       (/
@@ -85,6 +96,9 @@
 (defn desens-soil-header []
   ["timestamp" "moisture" "rssi" "snr" "battery"])
 
+(defn desens-noise-header []
+  ["timestamp" "noise" "rssi" "snr" "battery"])
+
 (defn desens-wind-header []
   ["timestamp" "velocity" "temperature" "rssi" "snr" "battery"])
 
@@ -113,6 +127,15 @@
    :rssi     (parse-rssi payload)
    :snr      (parse-snr payload)
    :battery  (parse-battery payload)
+   }
+  )
+
+(defn parse-desens-noise [payload]
+  {:pre [(= (count payload) 14)]}
+  {:noise   (parse-noise payload)
+   :rssi    (parse-rssi payload)
+   :snr     (parse-snr payload)
+   :battery (parse-battery payload)
    }
   )
 
