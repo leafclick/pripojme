@@ -49,8 +49,8 @@
 
 (defn lat-hemisphere [hem]
   (if (bit-test hem 0)
-    "S"
-    "N")
+    -1
+    1)
   )
 
 (defn parse-latitude [payload]
@@ -62,18 +62,19 @@
         hundredths (parse-low-bits (subs payload 4 6))
         thousandths (parse-high-bits (subs payload 6 8))
         hemisphere (parse-low-bits (subs payload 6 8))]
-    (str (+ (* 10 degHi) degLo) "° "
-         (format "%.3f" (+ (* 10 minHi) minLo (* 0.1 tenths) (* 0.01 hundredths) (* 0.001 thousandths)))
-         "′ "
-         (lat-hemisphere hemisphere)
+    (* (+
+         (+ (* 10 degHi) degLo)
+         (/ (+ (* 10 minHi) minLo (* 0.1 tenths) (* 0.01 hundredths) (* 0.001 thousandths)) 60)
          )
+       (lat-hemisphere hemisphere)
+       )
     )
   )
 
 (defn long-hemisphere [hem]
   (if (bit-test hem 0)
-    "W"
-    "E")
+    -1
+    1)
   )
 
 (defn parse-longtitude [payload]
@@ -85,11 +86,12 @@
         tenths (parse-low-bits (subs payload 4 6))
         hundredths (parse-high-bits (subs payload 6 8))
         hemisphere (parse-low-bits (subs payload 6 8))]
-    (str (+ (* 100 degHu) (* 10 degHi) degLo) "° "
-         (format "%.2f" (+ (* 10 minHi) minLo (* 0.1 tenths) (* 0.01 hundredths)))
-         "′ "
-         (long-hemisphere hemisphere)
+    (* (+
+         (+ (* 100 degHu) (* 10 degHi) degLo)
+         (/ (+ (* 10 minHi) minLo (* 0.1 tenths) (* 0.01 hundredths)) 60)
          )
+       (long-hemisphere hemisphere)
+       )
     )
   )
 
@@ -97,8 +99,8 @@
   (let [info (Integer/parseInt (subs payload 0 2) 16)]
     (if (bit-test info 4)
       (if (bit-test info 7)
-        (str (parse-latitude (subs payload 4 12)) " " (parse-longtitude (subs payload 12 20)))
-        (str (parse-latitude (subs payload 2 10)) " " (parse-longtitude (subs payload 10 18)))
+        (str "C(" (parse-latitude (subs payload 4 12)) "," (parse-longtitude (subs payload 12 20)) ")")
+        (str "C(" (parse-latitude (subs payload 2 10)) "," (parse-longtitude (subs payload 10 18)) ")")
         )
       nil
       )
