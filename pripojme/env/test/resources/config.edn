@@ -1,0 +1,5 @@
+{:dev true
+ :port 3000
+ :token "lalEH9j8oXC48RFf2pR0B57ZsZj68rS2"
+ ;; when :nrepl-port is set the application starts the nREPL server on load
+ :nrepl-port 7000}
