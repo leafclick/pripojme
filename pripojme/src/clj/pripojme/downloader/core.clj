@@ -150,11 +150,25 @@
     )
   )
 
-(defn update-device-data [model device-id]
+(defn append-device-data [model device-id]
   (let [filename (csv-name model device-id)
         last-record (last (exp/read-from-csv filename))
         data (parse-data model (rest (load-all-data-from device-id 0 [] (subs (get last-record 0) 0 19))))]
     (exp/append-to-csv filename
                        (map #(select-values %1 (map keyword (disp/get-column-names model))) data))
     )
+  )
+
+(defn update-device-data [model device-id]
+  (let [filename (csv-name model device-id)]
+    (if (exp/file-exists filename)
+      (append-device-data model device-id)
+      (export-device-data model device-id)
+      )
+    )
+  )
+
+(defn update-project-data [project-id]
+  (doseq [device ((:body (fetch-devices project-id)) "records")]
+    (update-device-data (device "model") (device "devEUI")))
   )

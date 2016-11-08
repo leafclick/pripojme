@@ -3,6 +3,10 @@
             [clojure.java.io :as io])
   )
 
+(defn file-exists [filename]
+    (.exists (io/as-file filename))
+  )
+
 (defn write-to-csv [filename data]
   (with-open [out-file (io/writer filename)]
     (csv/write-csv out-file

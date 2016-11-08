@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Graph2d or Basic Example</title>
+
+  <style type="text/css">
+    body, html {
+      font-family: sans-serif;
+    }
+  </style>
+
+  {% script "/js/vis.min.js" %}
+
+  {% style "/css/vis.min.css" %}
+
+</head>
+<body>
+<div id="visualizationTemp"></div>
+<div id="visualizationLight"></div>
+<div id="visualizationHum"></div>
+
+<script type="text/javascript">
+  var containerTemp = document.getElementById('visualizationTemp');
+  var itemsTemp = {{temperatureItems|safe}};
+
+  var datasetTemp = new vis.DataSet(itemsTemp);
+  var optionsTemp = {
+    legend: true
+  };
+  var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, optionsTemp);
+
+  var containerLight = document.getElementById('visualizationLight');
+  var itemsLight = {{lightItems|safe}};
+
+  var datasetLight = new vis.DataSet(itemsLight);
+  var optionsLight = {
+    legend: true
+  };
+  var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, optionsLight);
+
+  var containerHum = document.getElementById('visualizationHum');
+  var itemsHum = {{humItems|safe}};
+
+  var datasetHum = new vis.DataSet(itemsHum);
+  var optionsHum = {
+    legend: true
+  };
+  var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, optionsHum);
+</script>
+</body>
+</html>

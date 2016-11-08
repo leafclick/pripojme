@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Graph2d or Basic Example</title>
+
+  <style type="text/css">
+    body, html {
+      font-family: sans-serif;
+    }
+  </style>
+
+  {% script "/js/vis.min.js" %}
+
+  {% style "/css/vis.min.css" %}
+
+</head>
+<body>
+<div id="visualization"></div>
+
+<script type="text/javascript">
+  var container = document.getElementById('visualization');
+  var items = {{cljItems|safe}};
+
+  var dataset = new vis.DataSet(items);
+  var options = {
+    legend: true
+  };
+  var Graph2d = new vis.Graph2d(container, dataset, options);
+</script>
+</body>
+</html>
