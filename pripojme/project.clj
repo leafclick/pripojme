@@ -25,7 +25,8 @@
                  [selmer "1.10.0"]
                  [clj-http "3.1.0"]
                  [cheshire "5.6.3"]
-                 [org.clojure/data.csv "0.1.3"]]
+                 [org.clojure/data.csv "0.1.3"]
+                 [clj-time "0.12.2"]]
 
   :min-lein-version "2.0.0"
 

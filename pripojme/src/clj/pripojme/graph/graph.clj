@@ -26,6 +26,14 @@
   (wrap-data (map-all-files source 0 []))
   )
 
-;(defn construct-graph [source time-range]
- ; (wrap-data (map-all-files source 0 []))
-  ;)
+(defn map-all-files-in-range [devices time-range index data]
+  (if (empty? devices)
+    data
+    (let [device (first devices)
+          content (map-from-csv  (exp/read-from-csv-time-range (:file device) time-range) (:column device))]
+      (map-all-files-in-range (rest devices) time-range (inc index) (concat data (map-to-graph content index)))))
+  )
+
+(defn construct-graph [source time-range]
+  (wrap-data (map-all-files-in-range source time-range 0 []))
+  )
