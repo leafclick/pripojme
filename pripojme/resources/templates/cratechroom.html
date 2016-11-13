@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Graph2d or Basic Example</title>
+  <title>Projekt CRA tech room</title>
 
   <style type="text/css">
     body, html {
@@ -9,13 +9,64 @@
     }
   </style>
 
+
   {% script "/js/vis.min.js" %}
+  {% script "/js/jquery-3.1.1.min.js" %}
+  {% script "/js/bootstrap-datepicker.min.js" %}
+  {% script "/js/bootstrap-datepicker.cs.min.js" %}
 
   {% style "/css/vis.min.css" %}
 
+  {% style "/assets/bootstrap/css/bootstrap.min.css" %}
+  {% style "/assets/font-awesome/css/font-awesome.min.css" %}
+
+  {% style "/css/test.css" %}
+  {% style "/css/bootstrap-datepicker.standalone.min.css" %}
+
 </head>
 <body>
-<div id="visualization"></div>
+
+<div id="wrapper">
+<!-- Sidebar -->
+<div id="sidebar-wrapper">
+  <ul class="sidebar-nav">
+    <li class="sidebar-brand">
+      <a href="./">
+        Start Bootstrap {{params.period}}
+      </a>
+    </li>
+    <form action="/cratechroom" method="POST">
+      <li>
+        <input id="date" name="date" type="text" class="datepicker" data-date-format="dd.mm.yyyy" value="{{params.begin}}"/>
+      </li>
+      <li>
+        <select name="period">
+          <option value="day" {% ifequal params.period "day" %}selected="selected"{% endifequal %}>Den</option>
+          <option value="week" {% ifequal params.period "week" %}selected="selected"{% endifequal %}>Týden</option>
+          <option value="month" {% ifequal params.period "month" %}selected="selected"{% endifequal %}>Měsíc</option>
+        </select>
+      </li>
+      {% for device in devices %}
+      <li><label title="{{device.description}}">
+        <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.devEUI}}
+      </label>  </li>
+      {% endfor %}
+      <li>
+        <input class="btn btn-default btn-lg" type="submit" value="compute">
+      </li>
+    </form>
+  </ul>
+</div>
+<!-- /#sidebar-wrapper -->
+
+
+<!-- Page Content -->
+<div id="page-content-wrapper">
+  <div id="visualization"></div>
+</div>
+<!-- /#page-content-wrapper -->
+
+</div>
 
 <script type="text/javascript">
   var container = document.getElementById('visualization');
@@ -23,9 +74,16 @@
 
   var dataset = new vis.DataSet(items);
   var options = {
-    legend: true
+    legend: true,
+    height: "400px",
+    start: "{{params.start}}",
+    end: "{{params.end}}"
   };
   var Graph2d = new vis.Graph2d(container, dataset, options);
+
+  $('.datepicker').datepicker({
+    language: "cs"
+  });
 </script>
 </body>
 </html>

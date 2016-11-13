@@ -10,6 +10,24 @@
 
 (def projects ["CRaTechnologyRoom" "Greenhouse20"])
 
+(def devices-cratechroom
+  [{:devEUI      "0018B20000066679",
+    :projectId   "CRaTechnologyRoom",
+    :description "Teplotni a vlhkostni cidlo",
+    :model       "DTH",
+    :vendor      "Solidus Tech"}
+   {:devEUI      "0018B20000066681",
+    :projectId   "CRaTechnologyRoom",
+    :description "Teplotni a vlhkostni cidlo",
+    :model       "DTH",
+    :vendor      "Solidus Tech"}
+   {:devEUI      "prague-2016",
+    :projectId   "Weather",
+    :description "Teplotni udaje Praha 2016",
+    :model       "weather",
+    :vendor      "NA"}]
+  )
+
 (def devices-greenhouse
   [{:devEUI      "0004A30B0019BE42",
     :projectId   "Greenhouse20",
@@ -45,7 +63,13 @@
     :projectId   "Greenhouse20",
     :description "Cidlo intenzity svetla (predni cast skleniku)",
     :model       "DeSenseLight",
-    :vendor      "Develict"}])
+    :vendor      "Develict"}
+   {:devEUI      "prague-2016",
+    :projectId   "Weather",
+    :description "Teplotni udaje Praha 2016",
+    :model       "weather",
+    :vendor      "NA"}]
+  )
 
 (defn create-defaults []
   (let [today (.toDateTime (t/today-at-midnight))]
@@ -56,9 +80,11 @@
   )
 
 (defn params-to-web [params]
-  (let [formatter (f/formatter "dd.MM.yyyy")]
+  (let [formatter (f/formatter "dd.MM.yyyy")
+        visjs-formatter (f/formatter "yyyy-MM-dd 00:00:00")]
     {:begin  (f/unparse formatter (:begin params))
-     :end    (f/unparse formatter (:end params))
+     :end    (f/unparse visjs-formatter (:end params))
+     :start  (f/unparse visjs-formatter (:begin params))
      :period (name (:period params))
      }
     )
@@ -88,7 +114,7 @@
   (case period
     :day (.plusDays start 1)
     :week (.plusWeeks start 1)
-    :months (.plusMonths start 1)
+    :month (.plusMonths start 1)
     )
   )
 
@@ -106,51 +132,62 @@
   )
 
 (defn filter-checked-devices [checked-devices possible-devices]
-  (filter #(some (fn [name] (.contains (%1 :file) name)) checked-devices) possible-devices)
+  (let [filtered (filter #(some (fn [name] (.contains (%1 :file) name)) checked-devices) possible-devices)]
+    (do
+      (println checked-devices)
+      (println possible-devices)
+      (println filtered)
+      filtered
+        )
+    )
   )
 
-(defn cratechroom-page [request]
-  (let [params (parse-imputs request)
-        devices (get-in request [:params :devices])]
+(defn cratechroom-page [params devices]
+  (do
+    (println "Params " params)
+    (println "Devices " devices)
     (layout/render "cratechroom.html" {:cljItems (graph/construct-graph
                                                    (filter-checked-devices devices
                                                                            [{:file "DTH-0018B20000066679.csv" :column 1}
-                                                                            {:file "DTH-0018B20000066681.csv" :column 1}])
+                                                                            {:file "DTH-0018B20000066681.csv" :column 1}
+                                                                            {:file "weather-prague-2016.csv" :column 1}])
                                                    params)
+                                       :devices  (check-devices devices devices-cratechroom)
+                                       :params   (params-to-web params)
                                        }
                    )
     )
   )
 
-(defn greenhouse-page [request]
-  (let [params (parse-imputs request)
-        devices (get-in request [:params :devices])]
-    (layout/render "greenhouse.html"
-                   {:temperatureItems
-                    (graph/construct-graph
-                      (filter-checked-devices devices [{:file "DeSense-0004A30B001A180C.csv" :column 1}
-                                                       {:file "DeSense-0004A30B0019BE42.csv" :column 1}
-                                                       {:file "DeSense-0004A30B00196841.csv" :column 1}
-                                                       ])
-                      params)
-                    :lightItems
-                    (graph/construct-graph
-                      (filter-checked-devices devices [{:file "DeSenseLight-0004A30B0019DD02.csv" :column 1}
-                                                       {:file "DeSenseLight-0004A30B00199EB1.csv" :column 1}
-                                                       ])
-                      params)
-                    :humItems
-                    (graph/construct-graph
-                      (filter-checked-devices devices [{:file "DeSenseSoil-0004A30B0019F784.csv" :column 1}
-                                                       {:file "DeSenseSoil-0004A30B0019810D.csv" :column 1}
-                                                       {:file "DeSense-0004A30B001A180C.csv" :column 2}
-                                                       {:file "DeSense-0004A30B0019BE42.csv" :column 2}
-                                                       {:file "DeSense-0004A30B00196841.csv" :column 2}
-                                                       ])
-                      params)
-                    }
-                   )
-    )
+(defn greenhouse-page [params devices]
+  (layout/render "greenhouse.html"
+                 {:temperatureItems
+                  (graph/construct-graph
+                    (filter-checked-devices devices [{:file "DeSense-0004A30B001A180C.csv" :column 1}
+                                                     {:file "DeSense-0004A30B0019BE42.csv" :column 1}
+                                                     {:file "DeSense-0004A30B00196841.csv" :column 1}
+                                                     {:file "weather-prague-2016.csv" :column 1}
+                                                     ])
+                    params)
+                  :lightItems
+                  (graph/construct-graph
+                    (filter-checked-devices devices [{:file "DeSenseLight-0004A30B0019DD02.csv" :column 1}
+                                                     {:file "DeSenseLight-0004A30B00199EB1.csv" :column 1}
+                                                     ])
+                    params)
+                  :humItems
+                  (graph/construct-graph
+                    (filter-checked-devices devices [{:file "DeSenseSoil-0004A30B0019F784.csv" :column 1}
+                                                     {:file "DeSenseSoil-0004A30B0019810D.csv" :column 1}
+                                                     {:file "DeSense-0004A30B001A180C.csv" :column 2}
+                                                     {:file "DeSense-0004A30B0019BE42.csv" :column 2}
+                                                     {:file "DeSense-0004A30B00196841.csv" :column 2}
+                                                     ])
+                    params)
+                  :devices  (check-devices devices devices-greenhouse)
+                  :params   (params-to-web params)
+                  }
+                 )
   )
 
 (defn update-data []
@@ -166,8 +203,8 @@
 (defroutes home-routes
            (GET "/" [] (home-page))
            (GET "/update" [] (update-data))
-           (GET "/cratechroom" [] (cratechroom-page nil))
-           (POST "/cratechroom" request (cratechroom-page request))
-           (GET "/greenhouse" [] (greenhouse-page nil))
-           (POST "/greenhouse" request (greenhouse-page request))
+           (GET "/cratechroom" [] (cratechroom-page (create-defaults) (map #(%1 :devEUI) devices-cratechroom)))
+           (POST "/cratechroom" request (cratechroom-page (parse-imputs request) (get-in request [:params :devices])))
+           (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) devices-cratechroom)))
+           (POST "/greenhouse" request (greenhouse-page (parse-imputs request) (get-in request [:params :devices])))
            (GET "/about" [] (about-page)))
