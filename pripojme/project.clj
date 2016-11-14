@@ -1,7 +1,7 @@
 (defproject pripojme "0.1.0-SNAPSHOT"
 
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "pripoj.me competition entry"
+  :url "https://pripojme.leafclick.com"
 
   :dependencies [[bouncer "1.0.0"]
                  [compojure "1.5.1"]
