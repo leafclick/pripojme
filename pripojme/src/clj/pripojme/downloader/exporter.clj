@@ -20,11 +20,15 @@
                    data))
   )
 
-(defn read-from-csv [filename]
-  (with-open [in-file (io/reader filename)]
-    (doall
-      (csv/read-csv in-file)))
-  )
+(defn read-from-csv
+  "Returns csv contents or nil if file can't be read."
+  [filename]
+  (try
+    (with-open [in-file (io/reader filename)]
+      (doall
+        (csv/read-csv in-file)))
+    (catch Exception e
+      nil)))
 
 (defn read-from-csv-time-range [filename time-range]
   (let [begin (:begin time-range)
