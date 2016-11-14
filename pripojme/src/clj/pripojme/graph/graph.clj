@@ -7,8 +7,8 @@
   )
 
 (defn map-to-graph
-  ([raw] (map #(str "{x: \"" (:x %1) "\", y: " (:y %1) "}") raw))
-  ([raw group-id] (map #(str "{x: \"" (:x %1) "\", y: " (:y %1) ", group: " group-id "}") raw))
+  ([raw] (map #(str "{x: '" (:x %1) "', y: " (:y %1) "}") raw))
+  ([raw group-id] (map #(str "{x: '" (:x %1) "', y: " (:y %1) ", group: " group-id "}") raw))
   )
 
 (defn wrap-data [data]

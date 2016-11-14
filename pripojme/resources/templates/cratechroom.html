@@ -36,6 +36,7 @@
       </a>
     </li>
     <form action="/cratechroom" method="POST">
+      <input type="hidden" name="paging"/>
       <li>
         <input id="date" name="date" type="text" class="datepicker" data-date-format="dd.mm.yyyy" value="{{params.begin}}"/>
       </li>
@@ -52,7 +53,22 @@
       </label>  </li>
       {% endfor %}
       <li>
-        <input class="btn btn-default btn-lg" type="submit" value="compute">
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Previous" onclick="previousPage();">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
+            <li>
+              <a href="#" aria-label="Next" onclick="nextPage();">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
       </li>
     </form>
   </ul>
@@ -84,6 +100,16 @@
   $('.datepicker').datepicker({
     language: "cs"
   });
+
+  function previousPage() {
+    $('[name="paging"]' ).val("previous");
+    $( "form" ).submit();
+  }
+
+  function nextPage() {
+    $('[name="paging"]' ).val("next");
+    $( "form" ).submit();
+  }
 </script>
 </body>
 </html>
