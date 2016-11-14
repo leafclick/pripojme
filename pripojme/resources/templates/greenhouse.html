@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Graph2d or Basic Example</title>
+  <title>Projekt Greenhouse 2.0</title>
 
   <style type="text/css">
     body, html {
@@ -9,15 +9,80 @@
     }
   </style>
 
+  {% script "/js/moment-with-locales.js" %}
   {% script "/js/vis.min.js" %}
+  {% script "/js/jquery-3.1.1.min.js" %}
+  {% script "/js/bootstrap-datepicker.min.js" %}
+  {% script "/js/bootstrap-datepicker.cs.min.js" %}
 
   {% style "/css/vis.min.css" %}
 
+  {% style "/assets/bootstrap/css/bootstrap.min.css" %}
+  {% style "/assets/font-awesome/css/font-awesome.min.css" %}
+
+  {% style "/css/test.css" %}
+  {% style "/css/bootstrap-datepicker.standalone.min.css" %}
+
 </head>
 <body>
-<div id="visualizationTemp"></div>
-<div id="visualizationLight"></div>
-<div id="visualizationHum"></div>
+
+<div id="wrapper">
+  <!-- Sidebar -->
+  <div id="sidebar-wrapper">
+    <ul class="sidebar-nav">
+      <li class="sidebar-brand">
+        <a href="./">
+          Start Bootstrap {{params.period}}
+        </a>
+      </li>
+      <form action="/greenhouse" method="POST">
+        <input type="hidden" name="paging"/>
+        <li>
+          <input id="date" name="date" type="text" class="datepicker" data-date-format="dd.mm.yyyy" value="{{params.begin}}"/>
+        </li>
+        <li>
+          <select name="period">
+            <option value="day" {% ifequal params.period "day" %}selected="selected"{% endifequal %}>Den</option>
+            <option value="week" {% ifequal params.period "week" %}selected="selected"{% endifequal %}>Týden</option>
+            <option value="month" {% ifequal params.period "month" %}selected="selected"{% endifequal %}>Měsíc</option>
+          </select>
+        </li>
+        {% for device in devices %}
+        <li><label title="{{device.description}}">
+          <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.devEUI}}
+        </label>  </li>
+        {% endfor %}
+        <li>
+          <nav aria-label="Page navigation">
+            <ul class="pagination">
+              <li>
+                <a href="#" aria-label="Previous" onclick="previousPage();">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
+              <li>
+                <a href="#" aria-label="Next" onclick="nextPage();">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+
+        </li>
+      </form>
+    </ul>
+  </div>
+  <!-- /#sidebar-wrapper -->
+
+
+  <!-- Page Content -->
+  <div id="page-content-wrapper">
+    <div id="visualizationTemp"></div>
+    <div id="visualizationLight"></div>
+    <div id="visualizationHum"></div>
+    </div>
+  </div>
 
 <script type="text/javascript">
   var containerTemp = document.getElementById('visualizationTemp');
@@ -25,7 +90,11 @@
 
   var datasetTemp = new vis.DataSet(itemsTemp);
   var optionsTemp = {
-    legend: true
+    legend: true,
+    height: "400px",
+    start: "{{params.start}}",
+    end: "{{params.end}}",
+    locale: 'cs'
   };
   var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, optionsTemp);
 
@@ -34,7 +103,11 @@
 
   var datasetLight = new vis.DataSet(itemsLight);
   var optionsLight = {
-    legend: true
+    legend: true,
+    height: "400px",
+    start: "{{params.start}}",
+    end: "{{params.end}}",
+    locale: 'cs'
   };
   var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, optionsLight);
 
@@ -43,9 +116,27 @@
 
   var datasetHum = new vis.DataSet(itemsHum);
   var optionsHum = {
-    legend: true
+    legend: true,
+    height: "400px",
+    start: "{{params.start}}",
+    end: "{{params.end}}",
+    locale: 'cs'
   };
   var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, optionsHum);
+
+  $('.datepicker').datepicker({
+    language: "cs"
+  });
+
+  function previousPage() {
+    $('[name="paging"]' ).val("previous");
+    $( "form" ).submit();
+  }
+
+  function nextPage() {
+    $('[name="paging"]' ).val("next");
+    $( "form" ).submit();
+  }
 </script>
 </body>
 </html>

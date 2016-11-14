@@ -213,6 +213,6 @@
            (GET "/update" [] (update-data))
            (GET "/cratechroom" [] (cratechroom-page (create-defaults) (map #(%1 :devEUI) devices-cratechroom)))
            (POST "/cratechroom" request (cratechroom-page (parse-imputs request) (get-in request [:params :devices])))
-           (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) devices-cratechroom)))
+           (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) devices-greenhouse)))
            (POST "/greenhouse" request (greenhouse-page (parse-imputs request) (get-in request [:params :devices])))
            (GET "/about" [] (about-page)))

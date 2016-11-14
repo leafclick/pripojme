@@ -10,6 +10,7 @@
   </style>
 
 
+  {% script "/js/moment-with-locales.js" %}
   {% script "/js/vis.min.js" %}
   {% script "/js/jquery-3.1.1.min.js" %}
   {% script "/js/bootstrap-datepicker.min.js" %}
@@ -93,7 +94,8 @@
     legend: true,
     height: "400px",
     start: "{{params.start}}",
-    end: "{{params.end}}"
+    end: "{{params.end}}",
+    locale: 'cs'
   };
   var Graph2d = new vis.Graph2d(container, dataset, options);
 
