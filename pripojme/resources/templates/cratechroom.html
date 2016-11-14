@@ -88,6 +88,9 @@
 <script type="text/javascript">
   var container = document.getElementById('visualization');
   var items = {{cljItems|safe}};
+  var groupItems = {{groups|safe}};
+
+  var groups = new vis.DataSet(groupItems);
 
   var dataset = new vis.DataSet(items);
   var options = {
@@ -97,7 +100,7 @@
     end: "{{params.end}}",
     locale: 'cs'
   };
-  var Graph2d = new vis.Graph2d(container, dataset, options);
+  var Graph2d = new vis.Graph2d(container, dataset, groups, options);
 
   $('.datepicker').datepicker({
     language: "cs"

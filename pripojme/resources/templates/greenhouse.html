@@ -87,6 +87,7 @@
 <script type="text/javascript">
   var containerTemp = document.getElementById('visualizationTemp');
   var itemsTemp = {{temperatureItems|safe}};
+  var groupItems = {{groups|safe}};
 
   var datasetTemp = new vis.DataSet(itemsTemp);
   var optionsTemp = {
@@ -96,7 +97,7 @@
     end: "{{params.end}}",
     locale: 'cs'
   };
-  var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, optionsTemp);
+  var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, groupItems, optionsTemp);
 
   var containerLight = document.getElementById('visualizationLight');
   var itemsLight = {{lightItems|safe}};
@@ -109,7 +110,7 @@
     end: "{{params.end}}",
     locale: 'cs'
   };
-  var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, optionsLight);
+  var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, groupItems, optionsLight);
 
   var containerHum = document.getElementById('visualizationHum');
   var itemsHum = {{humItems|safe}};
@@ -122,7 +123,7 @@
     end: "{{params.end}}",
     locale: 'cs'
   };
-  var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, optionsHum);
+  var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, groupItems, optionsHum);
 
   $('.datepicker').datepicker({
     language: "cs"

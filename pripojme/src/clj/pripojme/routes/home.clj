@@ -12,16 +12,19 @@
 
 (def devices-cratechroom
   [{:devEUI      "0018B20000066679",
+    :graphId     0,
     :projectId   "CRaTechnologyRoom",
     :description "Teplotni a vlhkostni cidlo",
     :model       "DTH",
     :vendor      "Solidus Tech"}
    {:devEUI      "0018B20000066681",
+    :graphId     1,
     :projectId   "CRaTechnologyRoom",
     :description "Teplotni a vlhkostni cidlo",
     :model       "DTH",
     :vendor      "Solidus Tech"}
    {:devEUI      "prague-2016",
+    :graphId     2,
     :projectId   "Weather",
     :description "Teplotni udaje Praha 2016",
     :model       "weather",
@@ -30,42 +33,50 @@
 
 (def devices-greenhouse
   [{:devEUI      "0004A30B0019BE42",
+    :graphId     0,
     :projectId   "Greenhouse20",
     :description "Teplotni a vlhkostni cidlo (vzduch)",
     :model       "DeSense",
     :vendor      "Develict"}
    {:devEUI      "0004A30B001A180C",
+    :graphId     1,
     :projectId   "Greenhouse20",
     :description "Teplotni a vlhkostni cidlo (vzduch)",
     :model       "DeSense",
     :vendor      "Develict"}
    {:devEUI      "0004A30B00196841",
+    :graphId     2,
     :projectId   "Greenhouse20",
     :description "Teplotni a vlhkostni cidlo (vzduch)",
     :model       "DeSense",
     :vendor      "Develict"}
    {:devEUI      "0004A30B0019810D",
+    :graphId     3,
     :projectId   "Greenhouse20",
     :description "Cidlo vodivosti pudy (zadni cast skleniku)",
     :model       "DeSenseSoil",
     :vendor      "Develict"}
    {:devEUI      "0004A30B0019F784",
+    :graphId     4,
     :projectId   "Greenhouse20",
     :description "Cidlo vodivosti pudy (predni cast skleniku)",
     :model       "DeSenseSoil",
     :vendor      "Develict"}
    {:devEUI      "0004A30B0019DD02",
+    :graphId     5,
     :projectId   "Greenhouse20",
     :description "Cidlo intenzity svetla (zadni cast skleniku)",
     :model       "DeSenseLight",
     :vendor      "Develict"}
    {:devEUI      "0004A30B00199EB1",
+    :graphId     6,
     :projectId   "Greenhouse20",
     :description "Cidlo intenzity svetla (predni cast skleniku)",
     :model       "DeSenseLight",
     :vendor      "Develict"}
    {:devEUI      "prague-2016",
-    :projectId   "Weather",
+    :graphId     7,
+    :projectId   "weather",
     :description "Teplotni udaje Praha 2016",
     :model       "weather",
     :vendor      "NA"}]
@@ -150,18 +161,25 @@
     )
   )
 
+(defn add-groups-to-devices [devices data-sources]
+  (map #(merge % (first (filter (fn [device] (= (:devEUI %) (:devEUI device))) devices))) data-sources)
+  )
+
 (defn filter-checked-devices [checked-devices possible-devices]
-  (filter #(some (fn [name] (.contains (%1 :file) name)) checked-devices) possible-devices)
+  (filter #(some (fn [devEUI] (.equals (%1 :devEUI) devEUI)) checked-devices) possible-devices)
   )
 
 (defn cratechroom-page [params devices]
   (layout/render "cratechroom.html" {:cljItems (graph/construct-graph
                                                  (filter-checked-devices devices
-                                                                         [{:file "DTH-0018B20000066679.csv" :column 1}
-                                                                          {:file "DTH-0018B20000066681.csv" :column 1}
-                                                                          {:file "weather-prague-2016.csv" :column 1}])
+                                                                         (add-groups-to-devices devices-cratechroom
+                                                                                                [{:devEUI "0018B20000066679" :column 1}
+                                                                                                 {:devEUI "0018B20000066681" :column 1}
+                                                                                                 {:devEUI "prague-2016" :column 1}])
+                                                                         )
                                                  params)
                                      :devices  (check-devices devices devices-cratechroom)
+                                     :groups   (graph/construct-groups devices-cratechroom)
                                      :params   (params-to-web params)
                                      }
                  )
@@ -171,28 +189,38 @@
   (layout/render "greenhouse.html"
                  {:temperatureItems
                            (graph/construct-graph
-                             (filter-checked-devices devices [{:file "DeSense-0004A30B001A180C.csv" :column 1}
-                                                              {:file "DeSense-0004A30B0019BE42.csv" :column 1}
-                                                              {:file "DeSense-0004A30B00196841.csv" :column 1}
-                                                              {:file "weather-prague-2016.csv" :column 1}
-                                                              ])
+                             (filter-checked-devices devices
+                                                     (add-groups-to-devices devices-greenhouse
+                                                                            [{:devEUI "0004A30B001A180C" :column 1}
+                                                                             {:devEUI "0004A30B0019BE42" :column 1}
+                                                                             {:devEUI "0004A30B00196841" :column 1}
+                                                                             {:devEUI "prague-2016" :column 1}
+                                                                             ])
+                                                     )
                              params)
                   :lightItems
                            (graph/construct-graph
-                             (filter-checked-devices devices [{:file "DeSenseLight-0004A30B0019DD02.csv" :column 1}
-                                                              {:file "DeSenseLight-0004A30B00199EB1.csv" :column 1}
-                                                              ])
+                             (filter-checked-devices devices
+                                                     (add-groups-to-devices devices-greenhouse
+                                                                            [{:devEUI "0004A30B0019DD02" :column 1}
+                                                                             {:devEUI "0004A30B00199EB1" :column 1}
+                                                                             ])
+                                                     )
                              params)
                   :humItems
                            (graph/construct-graph
-                             (filter-checked-devices devices [{:file "DeSenseSoil-0004A30B0019F784.csv" :column 1}
-                                                              {:file "DeSenseSoil-0004A30B0019810D.csv" :column 1}
-                                                              {:file "DeSense-0004A30B001A180C.csv" :column 2}
-                                                              {:file "DeSense-0004A30B0019BE42.csv" :column 2}
-                                                              {:file "DeSense-0004A30B00196841.csv" :column 2}
-                                                              ])
+                             (filter-checked-devices devices
+                                                     (add-groups-to-devices devices-greenhouse
+                                                                            [{:devEUI "0004A30B0019F784" :column 1}
+                                                                             {:devEUI "0004A30B0019810D" :column 1}
+                                                                             {:devEUI "0004A30B001A180C" :column 2}
+                                                                             {:devEUI "0004A30B0019BE42" :column 2}
+                                                                             {:devEUI "0004A30B00196841" :column 2}
+                                                                             ])
+                                                     )
                              params)
                   :devices (check-devices devices devices-greenhouse)
+                  :groups  (graph/construct-groups devices-greenhouse)
                   :params  (params-to-web params)
                   }
                  )
