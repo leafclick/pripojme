@@ -98,7 +98,8 @@
     height: "400px",
     start: "{{params.start}}",
     end: "{{params.end}}",
-    locale: 'cs'
+    locale: 'cs',
+    dataAxis: {left: {title: {text: "Teplota (°C)"}}}
   };
   var Graph2d = new vis.Graph2d(container, dataset, groups, options);
 

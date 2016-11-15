@@ -95,7 +95,8 @@
     height: "400px",
     start: "{{params.start}}",
     end: "{{params.end}}",
-    locale: 'cs'
+    locale: 'cs',
+    dataAxis: {left: {title: {text: "Teplota (°C)"}}}
   };
   var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, groupItems, optionsTemp);
 
@@ -108,7 +109,8 @@
     height: "400px",
     start: "{{params.start}}",
     end: "{{params.end}}",
-    locale: 'cs'
+    locale: 'cs',
+    dataAxis: {left: {title: {text: "Osvětlení (lx)"}}}
   };
   var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, groupItems, optionsLight);
 
@@ -121,7 +123,8 @@
     height: "400px",
     start: "{{params.start}}",
     end: "{{params.end}}",
-    locale: 'cs'
+    locale: 'cs',
+    dataAxis: {left: {title: {text: "Vlhkost a vodivost (%)"}}}
   };
   var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, groupItems, optionsHum);
 
