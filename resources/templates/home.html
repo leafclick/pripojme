@@ -1,57 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-<div class="row">
-    <div class="col-sm-12">
-        <h1>
-            Úvodní slovo o programu
-        </h1>
+    <div class="row">
+        <div class="col-sm-12">
+            <h1> Najděte co je opravdu důležité. </h1>
+            <p>
+                Stále větší množství sbíraných a ukládaných dat představuje čím dál větší problém, jak se v získaných
+                údajích orientovat. Jak zjistíme, že se děje něco podstatného, co vyžaduje naši pozornost? A když už
+                nějaký problém vznikl, jak zjistíme jeho souvislosti a potenciální dopady?
+            </p>
+            <p>
+                Je nezbytné mít analytický systém, který umožní data dobře organizovat a vizuálně zpracovávat. Takový
+                systém nás může automatizovaně upozorňovat na různé nezvyklé situace, chyby a měl by nám dovolit data
+                kdykoliv jednoduše prozkoumat.
+            </p>
+            <p>
+                Kromě volby zdrojů dat je také potřeba mít možnost posouvat se v pohledu na data v čase a měnit úroveň
+                zobrazovaného detailu. Pohled na data musí být sdružený podle fyzikálních jednotek, se kterými čidla
+                pracují. Jedině tak je možné jednotlivé křivky v grafu rychle a smysluplně vizuálně porovnat.
+            </p>
+            <p>
+                Při práci s daty, která se týkají stejné věci nebo prostoru je ale vhodné “mít na očích” i ostatní data
+                pořízená ve stejnou dobu. Proto by se měl při změně výběru času nebo detailu, který uživatel potřebuje
+                zobrazit, měnit pohled na ostatní data stejným způsobem. Je tak mnohem jednodušší určit, co se na místě
+                dělo např. v případě problémů nebo mimořádných událostí. Zobrazení informací jako sady souběžných
+                časových údajů je klíčové k možnému odhalení nezjevných souvislostí v chování sledovaného systémů
+            </p>
+            <p>
+                Kromě toho je potřebné mít také k dispozici možnost jednoduché kontroly, kdy čidla pracují nesprávně,
+                tzn. mimo svůj zadaný technický rozsah.
+            </p>
 
-        <p>Bla bla bla...</p>
-    </div>
-</div>
-</div>
+            <h2> Pro koho je systém vhodný? </h2>
+            <p>
+                Primárně pro analytiky, kteří jsou výstupy z čidel schopní analyzovat a využít například k optimalizaci
+                přístrojů, které zajišťují podmínky daného prostoru (serverovny, skleníky, přístroje pro výrobu) nebo k
+                detekci jevů v životním prostředí, které spolu mohou souviset, přestože to není na první pohled zřejmé.
+            </p>
 
-<!--
-<div class="row">
-    <div id="sidebar-wrapper" class="col-md-1">
-        <div id="sidebar">
-            <ul class="nav list-group">
-                <li>
-                    <a class="list-group-item" href="#"><i class="icon-home icon-1x"></i>Sidebar Item 1</a>
-                </li>
-                <li>
-                    <a class="list-group-item" href="#"><i class="icon-home icon-1x"></i>Sidebar Item 2</a>
-                </li>
-                <li>
-                    <a class="list-group-item" href="#"><i class="icon-home icon-1x"></i>Sidebar Item 9</a>
-                </li>
-                <li>
-                    <a class="list-group-item" href="#"><i class="icon-home icon-1x"></i>Sidebar Item 10</a>
-                </li>
-                <li>
-                    <a class="list-group-item" href="#"><i class="icon-home icon-1x"></i>Sidebar Item 11</a>
-                </li>
+            <h2>Jak mohu systém ovládat?</h2>
+
+            <p>
+                Na jednotlivých stránkách jsou k dispozici data z měření jednotlivých projektů.
+            </p>
+
+            <p>
+            <ul>
+                <li>Pro výběr zobrazovaných senzorů použijte zaškrtávací tlačítko na bočním panelu.</li>
+                <li>Pro změnu výchozího zobrazovaného intervalu použijte roletové menu na bočním panelu.</li>
+                <li>Pro rychlý přechod na konkrétní datum použijte vstupní kalendářový vstup.</li>
+                <li>Pro posun na předchozí nebo následující interval použijte tlačítka se šipkami.</li>
+                <li>Pro posun v čase použijte myš při stisknutém levém tlačíku nad zvoleným grafem (stisk a tažení).</li>
+                <li>Pro plynulou změnu zobrazovaného detailu použijte kolečko na myši nad zvoleným grafem (scrolling).</li>
             </ul>
-        </div>
-    </div>
+            </p>
 
-    <div class="col-md-11">
-        <div class="side-body">
-            <h1> Main Content here </h1>
-            <pre> Resize the screen to view the left slide menu </pre>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+            <h2>
+                Jaká data systém využívá?
+            </h2>
+            <p>
+                Data poskytovaná rozhraním <a href="http://pripoj.me/summer-jam-rest-api/">api.pripoj.me</a> a
+                informacemi o počasí.
+            </p>
 
+            <p>
+                Systém pro demonstraci využívá data z čidel projektů Greenhouse 2.0, CRaTechnologyRoom a Noise.
+            </p>
+
+            <ul>
+                <li><b>Projekt Greenhouse 2.0</b> poskytuje čidla teploty, osvětlení, vlhkosti a vodivosti půdy ve
+                    skleníku.
+                </li>
+                <li><b>Projekt CRaTechnologyRoom</b> poskytuje čidla teploty v místnostech CRa.</li>
+                <li><b>Projekt Noise</b> obsahuje hluková čidla.</li>
+            </ul>
 
         </div>
     </div>
 </div>
--->
 
 {% endblock %}
