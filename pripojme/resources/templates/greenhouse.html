@@ -125,17 +125,41 @@
   };
   var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, groupItems, optionsHum);
 
+  function selectedDevices(){
+      var devices = [];
+      $('input:checked').each(function(device){
+          devices.push($(this).val());
+      });
+      return devices;
+  }
+
   function onRangeChanged (properties) {
       if (properties.byUser) {
-          Graph2dLight.setWindow(properties.start, properties.end);
-          Graph2dTemp.setWindow(properties.start, properties.end);
-          Graph2dHum.setWindow(properties.start, properties.end);
+          $.post('/greenhouseData', {
+              start: properties.start.toJSON(),
+              end: properties.end.toJSON(),
+              devices: selectedDevices()//"0004A30B00196841"
+          }).done(function( data ) {
+              datasetHum.clear();
+              datasetHum.add(data.humItems);
+              Graph2dHum.setWindow(properties.start, properties.end);
+
+              datasetLight.clear();
+              datasetLight.add(data.lightItems);
+              Graph2dLight.setWindow(properties.start, properties.end);
+
+
+              datasetTemp.clear();
+              datasetTemp.add(data.temperatureItems);
+              Graph2dTemp.setWindow(properties.start, properties.end);
+
+          })
       }
   }
 
-  Graph2dLight.on('rangechange', onRangeChanged);
-  Graph2dTemp.on('rangechange', onRangeChanged);
-  Graph2dHum.on('rangechange', onRangeChanged);
+  Graph2dLight.on('rangechanged', onRangeChanged);
+  Graph2dTemp.on('rangechanged', onRangeChanged);
+  Graph2dHum.on('rangechanged', onRangeChanged);
 
   $('.datepicker').datepicker({
     language: "cs",
