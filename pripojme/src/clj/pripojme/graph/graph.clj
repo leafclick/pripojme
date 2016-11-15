@@ -72,7 +72,7 @@
   )
 
 (defn devices-to-graph [devices]
-  (map #(str "{id: " (:graphId %) ", content: '" (:devEUI %) "', className: '" (str "vis-graph-group" (:graphId %)) "'}") devices)
+  (map #(str "{id: " (:graphId %) ", content: '" (:description %) " (" (:devEUI %) ")', className: '" (str "vis-graph-group" (:graphId %)) "'}") devices)
   )
 
 (defn construct-groups [devices]
