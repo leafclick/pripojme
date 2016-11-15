@@ -111,8 +111,6 @@
   (map #(check-device checked-devices %1) devices)
   )
 
-
-
 (defn add-groups-to-devices [devices data-sources]
   (map #(merge % (first (filter (fn [device] (= (:devEUI %) (:devEUI device))) devices))) data-sources)
   )

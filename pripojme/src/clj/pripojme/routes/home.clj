@@ -93,6 +93,14 @@
     )
   )
 
+(defn parse-devices [request]
+  (let [devices (get-in request [:params :devices])]
+    (if (seq? devices)
+      devices
+      [devices])
+    )
+  )
+
 (defn cratechroom-page [params devices]
   (layout/render "cratechroom.html"
                  {:cljItems (graph/construct-graph
@@ -185,9 +193,9 @@
            (GET "/" [] (home-page))
            (GET "/update" [] (update-data))
            (GET "/cratechroom" [] (cratechroom-page (create-defaults) (map #(%1 :devEUI) dev/devices-cratechroom)))
-           (POST "/cratechroom" request (cratechroom-page (parse-imputs request) (get-in request [:params :devices])))
-           (POST "/cratechroomData" request (cratechroom-data (parse-data-imputs request) (get-in request [:params :devices])))
+           (POST "/cratechroom" request (cratechroom-page (parse-imputs request) (parse-devices request)))
+           (POST "/cratechroomData" request (cratechroom-data (parse-data-imputs request) (parse-devices request)))
            (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) dev/devices-greenhouse)))
-           (POST "/greenhouse" request (greenhouse-page (parse-imputs request) (get-in request [:params :devices])))
-           (POST "/greenhouseData" request (greenhouse-data (parse-data-imputs request) (get-in request [:params :devices])))
+           (POST "/greenhouse" request (greenhouse-page (parse-imputs request) (parse-devices request)))
+           (POST "/greenhouseData" request (greenhouse-data (parse-data-imputs request) (parse-devices request)))
            )
