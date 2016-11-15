@@ -11,6 +11,10 @@
   ([raw group-id] (map #(str "{x: '" (:x %1) "', y: " (:y %1) ", group: " group-id "}") raw))
   )
 
+(defn map-to-data [raw group-id]
+  (map (fn [data] {:x (:x data) :y (:y data) :group group-id}) raw)
+  )
+
 (defn wrap-data [data]
   (str "[" (reduce str (interpose "," data)) "]"))
 
@@ -51,6 +55,19 @@
 
 (defn construct-graph [source time-range]
   (wrap-data (map-all-files-in-range source time-range 0 []))
+  )
+
+(defn map-all-data-files-in-range [devices time-range index data]
+  (if (empty? devices)
+    data
+    (let [device (first devices)
+          content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
+          interpolated-data (interpolate-data content time-range)]
+      (map-all-files-in-range (rest devices) time-range (inc index) (concat data (map-to-data interpolated-data index)))))
+  )
+
+(defn construct-data [source time-range]
+  (map-all-data-files-in-range source time-range 0 [])
   )
 
 (defn devices-to-graph [devices]

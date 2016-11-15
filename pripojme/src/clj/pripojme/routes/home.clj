@@ -157,7 +157,7 @@
   )
 
 (defn cratechroom-data [params devices]
-  {:body {:cljItems (graph/construct-graph
+  {:body {:cljItems (graph/construct-data
                       (dev/filter-checked-devices devices
                                                   (dev/add-groups-to-devices dev/devices-cratechroom
                                                                              dev/cratechroom-temp-data)
@@ -167,21 +167,21 @@
 
 (defn greenhouse-data [params devices]
   {:body {:temperatureItems
-          (graph/construct-graph
+          (graph/construct-data
             (dev/filter-checked-devices devices
                                         (dev/add-groups-to-devices dev/devices-greenhouse
                                                                    dev/greenhouse-temp-data)
                                         )
             params)
           :lightItems
-          (graph/construct-graph
+          (graph/construct-data
             (dev/filter-checked-devices devices
                                         (dev/add-groups-to-devices dev/devices-greenhouse
                                                                    dev/greenhouse-light-data)
                                         )
             params)
           :humItems
-          (graph/construct-graph
+          (graph/construct-data
             (dev/filter-checked-devices devices
                                         (dev/add-groups-to-devices dev/devices-greenhouse
                                                                    dev/greenhouse-hum-data)
