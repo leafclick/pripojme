@@ -84,7 +84,7 @@
   )
 
 (defn parse-data-imputs [request]
-  (let [visjs-formatter (f/formatter "yyyy-MM-ddThh:mm:ss")
+  (let [visjs-formatter (f/formatter "yyyy-MM-dd'T'HH:mm:ss")
         begin (f/parse visjs-formatter (subs (get-in request [:params :start]) 0 19))
         end (f/parse visjs-formatter (subs (get-in request [:params :end]) 0 19))]
     {:begin  begin
