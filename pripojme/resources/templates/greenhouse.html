@@ -1,183 +1,217 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <title>Projekt Greenhouse 2.0</title>
+{% extends "base.html" %}
 
-  <style type="text/css">
-    body, html {
-      font-family: sans-serif;
-    }
-  </style>
+{% block page-css %}
 
-  {% script "/js/moment-with-locales.js" %}
-  {% script "/js/vis.min.js" %}
-  {% script "/js/jquery-3.1.1.min.js" %}
-  {% script "/js/bootstrap-datepicker.min.js" %}
-  {% script "/js/bootstrap-datepicker.cs.min.js" %}
+{% style "/assets/bootstrap/css/bootstrap.min.css" %}
+{% style "/assets/font-awesome/css/font-awesome.min.css" %}
+{% style "/css/test.css" %}
+{% style "/css/bootstrap-datepicker.standalone.min.css" %}
+{% style "/css/screen.css" %}
+{% style "/css/vis.min.css" %}
 
-  {% style "/css/vis.min.css" %}
+{% endblock %}
 
-  {% style "/assets/bootstrap/css/bootstrap.min.css" %}
-  {% style "/assets/font-awesome/css/font-awesome.min.css" %}
+{% block content %}
 
-  {% style "/css/test.css" %}
-  {% style "/css/bootstrap-datepicker.standalone.min.css" %}
+<div id="sidebar-wrapper" style="background-color:white;">
+    <ul class="sidebar-nav sidebar-default" style="background-color:#f5f5f5; padding:20px;">
+        <form action="/greenhouse" method="POST">
+            <input type="hidden" name="paging"/>
+            <li>
+                <input id="date" name="date" type="text" class="datepicker" data-date-format="dd.mm.yyyy"
+                       value="{{params.begin}}"/>
+            </li>
+            <li>
+                <select name="period">
+                    <option value="day" {% ifequal params.period
+                    "day" %}selected="selected"{% endifequal %}>Den</option>
+                    <option value="week" {% ifequal params.period
+                    "week" %}selected="selected"{% endifequal %}>Týden</option>
+                    <option value="month" {% ifequal params.period
+                    "month" %}selected="selected"{% endifequal %}>Měsíc</option>
+                </select>
+            </li>
+            {% for device in devices %}
+            <li><label title="{{device.description}}">
+                <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.devEUI}}
+            </label></li>
+            {% endfor %}
+            <li>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li>
+                            <a href="#" aria-label="Previous" onclick="previousPage();">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" aria-label="Next" onclick="nextPage();">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
+                    </ul>
+                </nav>
 
-</head>
-<body>
-
-<div id="wrapper">
-  <!-- Sidebar -->
-  <div id="sidebar-wrapper">
-    <ul class="sidebar-nav">
-      <li class="sidebar-brand">
-        <a href="./">
-          Start Bootstrap {{params.period}}
-        </a>
-      </li>
-      <form action="/greenhouse" method="POST">
-        <input type="hidden" name="paging"/>
-        <li>
-          <input id="date" name="date" type="text" class="datepicker" data-date-format="dd.mm.yyyy" value="{{params.begin}}"/>
-        </li>
-        <li>
-          <select name="period">
-            <option value="day" {% ifequal params.period "day" %}selected="selected"{% endifequal %}>Den</option>
-            <option value="week" {% ifequal params.period "week" %}selected="selected"{% endifequal %}>Týden</option>
-            <option value="month" {% ifequal params.period "month" %}selected="selected"{% endifequal %}>Měsíc</option>
-          </select>
-        </li>
-        {% for device in devices %}
-        <li><label title="{{device.description}}">
-          <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.devEUI}}
-        </label>  </li>
-        {% endfor %}
-        <li>
-          <nav aria-label="Page navigation">
-            <ul class="pagination">
-              <li>
-                <a href="#" aria-label="Previous" onclick="previousPage();">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
-              <li>
-                <a href="#" aria-label="Next" onclick="nextPage();">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
-
-        </li>
-      </form>
+            </li>
+        </form>
     </ul>
-  </div>
-  <!-- /#sidebar-wrapper -->
+</div>
 
+<div id="right-pane" class="col-md-12">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
 
-  <!-- Page Content -->
-  <div id="page-content-wrapper">
-    <div id="visualizationTemp"></div>
-    <div id="visualizationLight"></div>
-    <div id="visualizationHum"></div>
+                <div id="visualizationTemp"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="visualizationLight"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="visualizationHum"></div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+{% endblock %}
+
+
+{% block page-scripts %}
+
+{% script "/js/moment-with-locales.js" %}
+{% script "/js/vis.min.js" %}
+{% script "/js/bootstrap-datepicker.min.js" %}
+{% script "/js/bootstrap-datepicker.cs.min.js" %}
 
 <script type="text/javascript">
-  var containerTemp = document.getElementById('visualizationTemp');
-  var itemsTemp = {{temperatureItems|safe}};
-  var groupItems = {{groups|safe}};
 
-  var datasetTemp = new vis.DataSet(itemsTemp);
-  var optionsTemp = {
-    legend: true,
-    height: "400px",
-    start: "{{params.start}}",
-    end: "{{params.end}}",
-    locale: 'cs',
-    dataAxis: {left: {title: {text: "Teplota (°C)"}}}
-  };
-  var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, groupItems, optionsTemp);
+    function loadVis() {
+        var containerTemp = document.getElementById('visualizationTemp');
+        var itemsTemp = {{temperatureItems|safe}};
+        var groupItems = {{groups|safe}};
 
-  var containerLight = document.getElementById('visualizationLight');
-  var itemsLight = {{lightItems|safe}};
+        var datasetTemp = new vis.DataSet(itemsTemp);
+        var optionsTemp = {
+            legend: true,
+            height: "400px",
+            start: "{{params.start}}",
+            end: "{{params.end}}",
+            locale: 'cs',
+            dataAxis: {left: {title: {text: "Teplota (°C)"}}}
+        };
+        var Graph2dTemp = new vis.Graph2d(containerTemp, datasetTemp, groupItems, optionsTemp);
 
-  var datasetLight = new vis.DataSet(itemsLight);
-  var optionsLight = {
-    legend: true,
-    height: "400px",
-    start: "{{params.start}}",
-    end: "{{params.end}}",
-    locale: 'cs',
-    dataAxis: {left: {title: {text: "Osvětlení (lx)"}}}
-  };
-  var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, groupItems, optionsLight);
+        var containerLight = document.getElementById('visualizationLight');
+        var itemsLight = {{lightItems|safe}};
 
-  var containerHum = document.getElementById('visualizationHum');
-  var itemsHum = {{humItems|safe}};
+        var datasetLight = new vis.DataSet(itemsLight);
+        var optionsLight = {
+            legend: true,
+            height: "400px",
+            start: "{{params.start}}",
+            end: "{{params.end}}",
+            locale: 'cs',
+            dataAxis: {left: {title: {text: "Osvětlení (lx)"}}}
+        };
+        var Graph2dLight = new vis.Graph2d(containerLight, datasetLight, groupItems, optionsLight);
 
-  var datasetHum = new vis.DataSet(itemsHum);
-  var optionsHum = {
-    legend: true,
-    height: "400px",
-    start: "{{params.start}}",
-    end: "{{params.end}}",
-    locale: 'cs',
-    dataAxis: {left: {title: {text: "Vlhkost a vodivost (%)"}}}
-  };
-  var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, groupItems, optionsHum);
+        var containerHum = document.getElementById('visualizationHum');
+        var itemsHum = {{humItems|safe}};
 
-  function selectedDevices(){
-      var devices = [];
-      $('input:checked').each(function(device){
-          devices.push($(this).val());
-      });
-      return devices;
-  }
+        var datasetHum = new vis.DataSet(itemsHum);
+        var optionsHum = {
+            legend: true,
+            height: "400px",
+            start: "{{params.start}}",
+            end: "{{params.end}}",
+            locale: 'cs',
+            dataAxis: {left: {title: {text: "Vlhkost a vodivost (%)"}}}
+        };
+        var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, groupItems, optionsHum);
 
-  function onRangeChanged (properties) {
-      if (properties.byUser) {
-          $.post('/greenhouseData', {
-              start: properties.start.toJSON(),
-              end: properties.end.toJSON(),
-              devices: selectedDevices()//"0004A30B00196841"
-          }).done(function( data ) {
-              datasetHum.clear();
-              datasetHum.add(data.humItems);
-              Graph2dHum.setWindow(properties.start, properties.end);
+        function selectedDevices(){
+            var devices = [];
+            $('input:checked').each(function(device){
+                devices.push($(this).val());
+            });
+            return devices;
+        }
 
-              datasetLight.clear();
-              datasetLight.add(data.lightItems);
-              Graph2dLight.setWindow(properties.start, properties.end);
+        function onRangeChanged (properties) {
+            if (properties.byUser) {
+                $.post('/greenhouseData', {
+                    start: properties.start.toJSON(),
+                    end: properties.end.toJSON(),
+                    devices: selectedDevices()//"0004A30B00196841"
+                }).done(function( data ) {
+                    datasetHum.clear();
+                    datasetHum.add(data.humItems);
+                    Graph2dHum.setWindow(properties.start, properties.end);
+
+                    datasetLight.clear();
+                    datasetLight.add(data.lightItems);
+                    Graph2dLight.setWindow(properties.start, properties.end);
 
 
-              datasetTemp.clear();
-              datasetTemp.add(data.temperatureItems);
-              Graph2dTemp.setWindow(properties.start, properties.end);
+                    datasetTemp.clear();
+                    datasetTemp.add(data.temperatureItems);
+                    Graph2dTemp.setWindow(properties.start, properties.end);
 
-          })
-      }
-  }
+                })
+            }
+        }
 
-  Graph2dLight.on('rangechanged', onRangeChanged);
-  Graph2dTemp.on('rangechanged', onRangeChanged);
-  Graph2dHum.on('rangechanged', onRangeChanged);
+        Graph2dLight.on('rangechanged', onRangeChanged);
+        Graph2dTemp.on('rangechanged', onRangeChanged);
+        Graph2dHum.on('rangechanged', onRangeChanged);
 
-  $('.datepicker').datepicker({
-    language: "cs",
-    autoclose: true
-  });
+        $('.datepicker').datepicker({
+            language: "cs",
+            autoclose: true
+        });
 
-  function previousPage() {
-    $('[name="paging"]' ).val("previous");
-    $( "form" ).submit();
-  }
 
-  function nextPage() {
-    $('[name="paging"]' ).val("next");
-    $( "form" ).submit();
-  }
+        Graph2dLight.on('rangechange', onRangeChanged);
+        Graph2dTemp.on('rangechange', onRangeChanged);
+        Graph2dHum.on('rangechange', onRangeChanged);
+
+        $('.datepicker').datepicker({
+            language: "cs",
+            autoclose: true
+        });
+
+    }
+
+    function previousPage() {
+        $('[name="paging"]' ).val("previous");
+        $( "form" ).submit();
+    }
+
+    function nextPage() {
+        $('[name="paging"]' ).val("next");
+        $( "form" ).submit();
+    }
+
+    if(window.attachEvent) {
+        window.attachEvent('onload', loadVis);
+    } else {
+        if(window.onload) {
+            var curronload = window.onload;
+            var newonload = function(evt) {
+                curronload(evt);
+                loadVis(evt);
+            };
+            window.onload = newonload;
+        } else {
+            window.onload = loadVis();
+        }
+    }
 </script>
-</body>
-</html>
+
+{% endblock %}

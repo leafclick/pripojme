@@ -1,41 +1,21 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-  <title>Projekt CRA tech room</title>
+{% extends "base.html" %}
 
-  <style type="text/css">
-    body, html {
-      font-family: sans-serif;
-    }
-  </style>
+{% block page-css %}
 
+{% style "/assets/bootstrap/css/bootstrap.min.css" %}
+{% style "/assets/font-awesome/css/font-awesome.min.css" %}
+{% style "/css/test.css" %}
+{% style "/css/bootstrap-datepicker.standalone.min.css" %}
+{% style "/css/screen.css" %}
+{% style "/css/vis.min.css" %}
 
-  {% script "/js/moment-with-locales.js" %}
-  {% script "/js/vis.min.js" %}
-  {% script "/js/jquery-3.1.1.min.js" %}
-  {% script "/js/bootstrap-datepicker.min.js" %}
-  {% script "/js/bootstrap-datepicker.cs.min.js" %}
+{% endblock %}
 
-  {% style "/css/vis.min.css" %}
+{% block content %}
 
-  {% style "/assets/bootstrap/css/bootstrap.min.css" %}
-  {% style "/assets/font-awesome/css/font-awesome.min.css" %}
-
-  {% style "/css/test.css" %}
-  {% style "/css/bootstrap-datepicker.standalone.min.css" %}
-
-</head>
-<body>
-
-<div id="wrapper">
 <!-- Sidebar -->
-<div id="sidebar-wrapper">
-  <ul class="sidebar-nav">
-    <li class="sidebar-brand">
-      <a href="./">
-        Start Bootstrap {{params.period}}
-      </a>
-    </li>
+<div id="sidebar-wrapper" style="background-color:white;">
+  <ul class="sidebar-nav sitebar-default" style="background-color:#f5f5f5; padding:20px;">
     <form action="/cratechroom" method="POST">
       <input type="hidden" name="paging"/>
       <li>
@@ -61,12 +41,12 @@
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
-            <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
             <li>
               <a href="#" aria-label="Next" onclick="nextPage();">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
+            <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
           </ul>
         </nav>
 
@@ -76,47 +56,75 @@
 </div>
 <!-- /#sidebar-wrapper -->
 
-
 <!-- Page Content -->
-<div id="page-content-wrapper">
-  <div id="visualization"></div>
+<div id="right-pane" class="col-md-12">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div id="visualization"></div>
+      </div>
+    </div>
 </div>
-<!-- /#page-content-wrapper -->
 
-</div>
+{% endblock %}
+
+{% block page-scripts %}
+
+{% script "/js/moment-with-locales.js" %}
+{% script "/js/vis.min.js" %}
+{% script "/js/bootstrap-datepicker.min.js" %}
+{% script "/js/bootstrap-datepicker.cs.min.js" %}
 
 <script type="text/javascript">
-  var container = document.getElementById('visualization');
-  var items = {{cljItems|safe}};
-  var groupItems = {{groups|safe}};
+    function loadVis() {
+        var container = document.getElementById('visualization');
+        var items = {{cljItems|safe}};
+        var groupItems = {{groups|safe}};
 
-  var groups = new vis.DataSet(groupItems);
+        var groups = new vis.DataSet(groupItems);
 
-  var dataset = new vis.DataSet(items);
-  var options = {
-    legend: true,
-    height: "400px",
-    start: "{{params.start}}",
-    end: "{{params.end}}",
-    locale: 'cs',
-    dataAxis: {left: {title: {text: "Teplota (°C)"}}}
-  };
-  var Graph2d = new vis.Graph2d(container, dataset, groups, options);
+        var dataset = new vis.DataSet(items);
+        var options = {
+            legend: true,
+            height: "400px",
+            start: "{{params.start}}",
+            end: "{{params.end}}",
+            locale: 'cs',
+            dataAxis: {left: {title: {text: "Teplota (°C)"}}}
+        };
+        var Graph2d = new vis.Graph2d(container, dataset, groups, options);
 
-  $('.datepicker').datepicker({
-    language: "cs",
-    autoclose: true
-  });
+        $('.datepicker').datepicker({
+            language: "cs",
+            autoclose: true
+        });
+    }
 
-  function previousPage() {
-    $('[name="paging"]' ).val("previous");
-    $( "form" ).submit();
-  }
+    function previousPage() {
+        $('[name="paging"]' ).val("previous");
+        $( "form" ).submit();
+    }
 
-  function nextPage() {
-    $('[name="paging"]' ).val("next");
-    $( "form" ).submit();
-  }
+    function nextPage() {
+        $('[name="paging"]' ).val("next");
+        $( "form" ).submit();
+    }
+
+    if(window.attachEvent) {
+        window.attachEvent('onload', loadVis);
+    } else {
+        if(window.onload) {
+            var curronload = window.onload;
+            var newonload = function(evt) {
+                curronload(evt);
+                loadVis(evt);
+            };
+            window.onload = newonload;
+        } else {
+            window.onload = loadVis();
+        }
+    }
+
 </script>
-</body>
-</html>
+
+{% endblock %}
