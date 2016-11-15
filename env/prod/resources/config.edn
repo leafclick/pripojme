@@ -1,5 +1,5 @@
 {:production true
  :token "lalEH9j8oXC48RFf2pR0B57ZsZj68rS2"
- :data-dir "/home/petr/tmp/"
- :weather-file "/home/petr/tmp/weather-prague-2016.csv"
+ :data-dir "/opt/pripojme/data/"
+ :weather-file "/opt/skyspark/db/pripojme/io/weather-prague-2016.csv"
  :port 3000}
