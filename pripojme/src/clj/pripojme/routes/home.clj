@@ -5,82 +5,11 @@
             [pripojme.downloader.core :as downloader]
             [clojure.java.io :as io]
             [clj-time.core :as t]
-            [clj-time.format :as f])
-  (:import (org.joda.time DateTime)))
+            [clj-time.format :as f]
+            [pripojme.graph.devices :as dev])
+  (:import (org.joda.time DateTime Days)))
 
 (def projects ["CRaTechnologyRoom" "Greenhouse20"])
-
-(def devices-cratechroom
-  [{:devEUI      "0018B20000066679",
-    :graphId     0,
-    :projectId   "CRaTechnologyRoom",
-    :description "Teplotni a vlhkostni cidlo",
-    :model       "DTH",
-    :vendor      "Solidus Tech"}
-   {:devEUI      "0018B20000066681",
-    :graphId     1,
-    :projectId   "CRaTechnologyRoom",
-    :description "Teplotni a vlhkostni cidlo",
-    :model       "DTH",
-    :vendor      "Solidus Tech"}
-   {:devEUI      "prague-2016",
-    :graphId     2,
-    :projectId   "Weather",
-    :description "Teplotni udaje Praha 2016",
-    :model       "weather",
-    :vendor      "NA"}]
-  )
-
-(def devices-greenhouse
-  [{:devEUI      "0004A30B0019BE42",
-    :graphId     0,
-    :projectId   "Greenhouse20",
-    :description "Teplotni a vlhkostni cidlo (vzduch)",
-    :model       "DeSense",
-    :vendor      "Develict"}
-   {:devEUI      "0004A30B001A180C",
-    :graphId     1,
-    :projectId   "Greenhouse20",
-    :description "Teplotni a vlhkostni cidlo (vzduch)",
-    :model       "DeSense",
-    :vendor      "Develict"}
-   {:devEUI      "0004A30B00196841",
-    :graphId     2,
-    :projectId   "Greenhouse20",
-    :description "Teplotni a vlhkostni cidlo (vzduch)",
-    :model       "DeSense",
-    :vendor      "Develict"}
-   {:devEUI      "0004A30B0019810D",
-    :graphId     3,
-    :projectId   "Greenhouse20",
-    :description "Cidlo vodivosti pudy (zadni cast skleniku)",
-    :model       "DeSenseSoil",
-    :vendor      "Develict"}
-   {:devEUI      "0004A30B0019F784",
-    :graphId     4,
-    :projectId   "Greenhouse20",
-    :description "Cidlo vodivosti pudy (predni cast skleniku)",
-    :model       "DeSenseSoil",
-    :vendor      "Develict"}
-   {:devEUI      "0004A30B0019DD02",
-    :graphId     5,
-    :projectId   "Greenhouse20",
-    :description "Cidlo intenzity svetla (zadni cast skleniku)",
-    :model       "DeSenseLight",
-    :vendor      "Develict"}
-   {:devEUI      "0004A30B00199EB1",
-    :graphId     6,
-    :projectId   "Greenhouse20",
-    :description "Cidlo intenzity svetla (predni cast skleniku)",
-    :model       "DeSenseLight",
-    :vendor      "Develict"}
-   {:devEUI      "prague-2016",
-    :graphId     7,
-    :projectId   "weather",
-    :description "Teplotni udaje Praha 2016",
-    :model       "weather",
-    :vendor      "NA"}]
-  )
 
 (defn create-defaults []
   (let [today (.toDateTime (t/today-at-midnight))]
@@ -103,23 +32,7 @@
 
 (defn home-page []
   (layout/render
-    "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
-
-(defn check-device [checked-devices device]
-  (if (some (fn [name] (= (:devEUI device) name)) checked-devices)
-    (conj device {:checked "checked"})
-    device
-    )
-  )
-
-(defn check-devices [checked-devices devices]
-  (map #(check-device checked-devices %1) devices)
-  )
-
-(defn about-page []
-  (layout/render "about.html" {:projects projects
-                               :devices  (check-devices ["0004A30B00199EB1" "0004A30B0019810D"] devices-greenhouse)
-                               :params   (params-to-web (create-defaults))}))
+    "home.html"))
 
 (defn plus-period [^DateTime start period]
   (case period
@@ -161,27 +74,37 @@
     )
   )
 
-(defn add-groups-to-devices [devices data-sources]
-  (map #(merge % (first (filter (fn [device] (= (:devEUI %) (:devEUI device))) devices))) data-sources)
+(defn compute-data-period [^DateTime begin ^DateTime end]
+  (let [days (.getDays (Days/daysBetween begin end))]
+    (cond
+      (> days 7) :month
+      (> days 1) :week
+      :else :day)
+    )
   )
 
-(defn filter-checked-devices [checked-devices possible-devices]
-  (filter #(some (fn [devEUI] (.equals (%1 :devEUI) devEUI)) checked-devices) possible-devices)
+(defn parse-data-imputs [request]
+  (let [visjs-formatter (f/formatter "yyyy-MM-ddThh:mm:ss")
+        begin (f/parse visjs-formatter (subs (get-in request [:params :start]) 0 19))
+        end (f/parse visjs-formatter (subs (get-in request [:params :end]) 0 19))]
+    {:begin  begin
+     :end    end
+     :period (compute-data-period begin end)}
+    )
   )
 
 (defn cratechroom-page [params devices]
-  (layout/render "cratechroom.html" {:cljItems (graph/construct-graph
-                                                 (filter-checked-devices devices
-                                                                         (add-groups-to-devices devices-cratechroom
-                                                                                                [{:devEUI "0018B20000066679" :column 1}
-                                                                                                 {:devEUI "0018B20000066681" :column 1}
-                                                                                                 {:devEUI "prague-2016" :column 1}])
-                                                                         )
-                                                 params)
-                                     :devices  (check-devices devices devices-cratechroom)
-                                     :groups   (graph/construct-groups devices-cratechroom)
-                                     :params   (params-to-web params)
-                                     }
+  (layout/render "cratechroom.html"
+                 {:cljItems (graph/construct-graph
+                              (dev/filter-checked-devices devices
+                                                          (dev/add-groups-to-devices dev/devices-cratechroom
+                                                                                     dev/cratechroom-temp-data)
+                                                          )
+                              params)
+                  :devices  (dev/check-devices devices dev/devices-cratechroom)
+                  :groups   (graph/construct-groups dev/devices-cratechroom)
+                  :params   (params-to-web params)
+                  }
                  )
   )
 
@@ -189,38 +112,27 @@
   (layout/render "greenhouse.html"
                  {:temperatureItems
                            (graph/construct-graph
-                             (filter-checked-devices devices
-                                                     (add-groups-to-devices devices-greenhouse
-                                                                            [{:devEUI "0004A30B001A180C" :column 1}
-                                                                             {:devEUI "0004A30B0019BE42" :column 1}
-                                                                             {:devEUI "0004A30B00196841" :column 1}
-                                                                             {:devEUI "prague-2016" :column 1}
-                                                                             ])
-                                                     )
+                             (dev/filter-checked-devices devices
+                                                         (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                                    dev/greenhouse-temp-data)
+                                                         )
                              params)
                   :lightItems
                            (graph/construct-graph
-                             (filter-checked-devices devices
-                                                     (add-groups-to-devices devices-greenhouse
-                                                                            [{:devEUI "0004A30B0019DD02" :column 1}
-                                                                             {:devEUI "0004A30B00199EB1" :column 1}
-                                                                             ])
-                                                     )
+                             (dev/filter-checked-devices devices
+                                                         (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                                    dev/greenhouse-light-data)
+                                                         )
                              params)
                   :humItems
                            (graph/construct-graph
-                             (filter-checked-devices devices
-                                                     (add-groups-to-devices devices-greenhouse
-                                                                            [{:devEUI "0004A30B0019F784" :column 1}
-                                                                             {:devEUI "0004A30B0019810D" :column 1}
-                                                                             {:devEUI "0004A30B001A180C" :column 2}
-                                                                             {:devEUI "0004A30B0019BE42" :column 2}
-                                                                             {:devEUI "0004A30B00196841" :column 2}
-                                                                             ])
-                                                     )
+                             (dev/filter-checked-devices devices
+                                                         (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                                    dev/greenhouse-hum-data)
+                                                         )
                              params)
-                  :devices (check-devices devices devices-greenhouse)
-                  :groups  (graph/construct-groups devices-greenhouse)
+                  :devices (dev/check-devices devices dev/devices-greenhouse)
+                  :groups  (graph/construct-groups dev/devices-greenhouse)
                   :params  (params-to-web params)
                   }
                  )
@@ -236,11 +148,46 @@
     )
   )
 
+(defn cratechroom-data [params devices]
+  {:body {:cljItems (graph/construct-graph
+                      (dev/filter-checked-devices devices
+                                                  (dev/add-groups-to-devices dev/devices-cratechroom
+                                                                             dev/cratechroom-temp-data)
+                                                  )
+                      params)}}
+  )
+
+(defn greenhouse-data [params devices]
+  {:body {:temperatureItems
+          (graph/construct-graph
+            (dev/filter-checked-devices devices
+                                        (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                   dev/greenhouse-temp-data)
+                                        )
+            params)
+          :lightItems
+          (graph/construct-graph
+            (dev/filter-checked-devices devices
+                                        (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                   dev/greenhouse-light-data)
+                                        )
+            params)
+          :humItems
+          (graph/construct-graph
+            (dev/filter-checked-devices devices
+                                        (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                   dev/greenhouse-hum-data)
+                                        )
+            params)}}
+  )
+
 (defroutes home-routes
            (GET "/" [] (home-page))
            (GET "/update" [] (update-data))
-           (GET "/cratechroom" [] (cratechroom-page (create-defaults) (map #(%1 :devEUI) devices-cratechroom)))
+           (GET "/cratechroom" [] (cratechroom-page (create-defaults) (map #(%1 :devEUI) dev/devices-cratechroom)))
            (POST "/cratechroom" request (cratechroom-page (parse-imputs request) (get-in request [:params :devices])))
-           (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) devices-greenhouse)))
+           (POST "/cratechroomData" request (cratechroom-data (parse-data-imputs request) (get-in request [:params :devices])))
+           (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) dev/devices-greenhouse)))
            (POST "/greenhouse" request (greenhouse-page (parse-imputs request) (get-in request [:params :devices])))
-           (GET "/about" [] (about-page)))
+           (POST "/greenhouseData" request (greenhouse-data (parse-data-imputs request) (get-in request [:params :devices])))
+           )
