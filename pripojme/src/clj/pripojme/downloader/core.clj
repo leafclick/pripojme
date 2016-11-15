@@ -116,7 +116,7 @@
   (let [payloadHex (:payloadHex raw)]
     (if-let [payload (disp/parse-payload model payloadHex)]
       (conj {:timestamp (:timestamp raw)} payload)
-      (log/warn [str "Malformed data for payload" model " #" payloadHex "#"]))))
+      (log/warn (str "Malformed data for payload" model " #" payloadHex "#")))))
 
 (defn parse-data [model rawData]
   (let [xf (comp (map (fn [raw] (parse-payload model raw)))
