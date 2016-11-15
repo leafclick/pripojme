@@ -29,11 +29,12 @@
     )
   )
 
-(defn interpolate-data [data time-range]
-  (case (:period time-range)
-    :day data
-    :week (map #(create-average %) (partition-all 3 data))
-    :month (map #(create-average %) (partition-all 5 data))
+(defn interpolate-data [data]
+  (let [count (count data)]
+    (if (< count 200)
+      data
+      (map #(create-average %) (partition-all (int (/ count 100)) data))
+      )
     )
   )
 
@@ -49,7 +50,7 @@
     data
     (let [device (first devices)
           content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
-          interpolated-data (interpolate-data content time-range)]
+          interpolated-data (interpolate-data content)]
       (map-all-files-in-range (rest devices) time-range (concat data (map-to-graph interpolated-data (:graphId device))))))
   )
 
@@ -62,7 +63,7 @@
     data
     (let [device (first devices)
           content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
-          interpolated-data (interpolate-data content time-range)]
+          interpolated-data (interpolate-data content)]
       (map-all-data-files-in-range (rest devices) time-range (concat data (map-to-data interpolated-data (:graphId device))))))
   )
 
