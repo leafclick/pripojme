@@ -58,11 +58,12 @@
 
 <!-- Page Content -->
 <div id="right-pane">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <div id="visualization"></div>
-      </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="visualization"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -93,6 +94,53 @@
             dataAxis: {left: {title: {text: "Teplota (°C)"}}}
         };
         var Graph2d = new vis.Graph2d(container, dataset, groups, options);
+
+        function selectedDevices(){
+            var devices = [];
+            $('input:checked').each(function(device){
+                devices.push($(this).val());
+            });
+            return devices;
+        }
+        function clearData(){
+            dataset.clear();
+        }
+
+        function debounce(fn, delay) {
+            var timer = null;
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(context, args);
+                }, delay);
+            };
+        }
+
+
+        function fetchData(properties) {
+            if (properties.byUser) {
+                console.log("fetching data for: " + properties.start + " - " + properties.end);
+                $.post('/cratechroomData', {
+                    start: properties.start.toJSON(),
+                    end: properties.end.toJSON(),
+                    devices: selectedDevices()//"0004A30B00196841"
+                }).done(function (data) {
+                    clearData();
+                    dataset.add(data.cljItems);
+                });
+            }
+        }
+
+        function syncGraphWindows (properties) {
+            if (properties.byUser) {
+                Graph2d.setWindow(properties.start, properties.end);
+            }
+        }
+
+        Graph2d.on('rangechanged', syncGraphWindows);
+
+        Graph2d.on('rangechanged', debounce(fetchData, 300));
 
         $('.datepicker').datepicker({
             language: "cs",

@@ -58,18 +58,19 @@
 
 <!-- Page Content -->
 <div id="right-pane">
-  <div class="container">
-      <div class="row">
-          <div class="col-lg-12">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
 
-              <div id="visualizationNoise"></div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-lg-12">
-              <div id="visualizationErrors"></div>
-          </div>
-      </div>
+                <div id="visualizationNoise"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="visualizationErrors"></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
@@ -112,9 +113,61 @@
             end: "{{params.end}}",
             locale: 'cs',
             style:'points',
-            dataAxis: {left: {title: {text: "Nepovolené hodnoty hluku (db)"}}}
+            dataAxis: {left: {title: {text: "Chybné hodnoty hluku (db)"}}}
         };
         var Graph2dError = new vis.Graph2d(containerError, datasetError, groupError, optionsError);
+
+        function selectedDevices(){
+            var devices = [];
+            $('input:checked').each(function(device){
+                devices.push($(this).val());
+            });
+            return devices;
+        }
+        function clearData(){
+            dataset.clear();
+            datasetError.clear();
+        }
+
+        function debounce(fn, delay) {
+            var timer = null;
+            return function () {
+                var context = this, args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(context, args);
+                }, delay);
+            };
+        }
+
+
+        function fetchData(properties) {
+            if (properties.byUser) {
+                console.log("fetching data for: " + properties.start + " - " + properties.end);
+                $.post('/noiseData', {
+                    start: properties.start.toJSON(),
+                    end: properties.end.toJSON(),
+                    devices: selectedDevices()//"0004A30B00196841"
+                }).done(function (data) {
+                    clearData();
+                    dataset.add(data.cljItems);
+                    datasetError.add(data.errorItems);
+                });
+            }
+        }
+
+        function syncGraphWindows (properties) {
+            if (properties.byUser) {
+                Graph2d.setWindow(properties.start, properties.end);
+                Graph2dError.setWindow(properties.start, properties.end);
+            }
+        }
+
+        Graph2d.on('rangechanged', syncGraphWindows);
+        Graph2dError.on('rangechanged', syncGraphWindows);
+
+        Graph2d.on('rangechanged', debounce(fetchData, 300));
+        Graph2dError.on('rangechanged', debounce(fetchData, 300));
 
         $('.datepicker').datepicker({
             language: "cs",

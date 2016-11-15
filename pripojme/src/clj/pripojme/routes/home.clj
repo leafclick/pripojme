@@ -201,7 +201,7 @@
                                                                                dev/noise-data)
                                                     )
                         params
-                        #(<= 40.0 (:y %) 100.0)
+                        #(<= 40.0 (Double/parseDouble (:y %)) 100.0)
                         )
           :errorItems (graph/construct-filtered-no-interpolation-data
                         (dev/filter-checked-devices devices
@@ -209,7 +209,7 @@
                                                                                dev/noise-data)
                                                     )
                         params
-                        (complement #(<= 40.0 (:y %) 100.0))
+                        (complement #(<= 40.0 (Double/parseDouble (:y %)) 100.0))
                         )}}
   )
 
