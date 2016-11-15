@@ -33,7 +33,7 @@
             </li>
             {% for device in devices %}
             <li><label title="{{device.description}}">
-                <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.devEUI}}
+                <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.description}}  {{device.devEUI}}
             </label></li>
             {% endfor %}
             <li>
