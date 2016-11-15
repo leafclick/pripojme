@@ -125,6 +125,18 @@
   };
   var Graph2dHum = new vis.Graph2d(containerHum, datasetHum, groupItems, optionsHum);
 
+  function onRangeChanged (properties) {
+      if (properties.byUser) {
+          Graph2dLight.setWindow(properties.start, properties.end);
+          Graph2dTemp.setWindow(properties.start, properties.end);
+          Graph2dHum.setWindow(properties.start, properties.end);
+      }
+  }
+
+  Graph2dLight.on('rangechange', onRangeChanged);
+  Graph2dTemp.on('rangechange', onRangeChanged);
+  Graph2dHum.on('rangechange', onRangeChanged);
+
   $('.datepicker').datepicker({
     language: "cs"
   });
