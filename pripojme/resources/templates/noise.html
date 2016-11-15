@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block page-css %}
+
+{% style "/assets/bootstrap/css/bootstrap.min.css" %}
+{% style "/assets/font-awesome/css/font-awesome.min.css" %}
+{% style "/css/test.css" %}
+{% style "/css/bootstrap-datepicker.standalone.min.css" %}
+{% style "/css/screen.css" %}
+{% style "/css/vis.min.css" %}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- Sidebar -->
+<div id="sidebar-wrapper" style="background-color:white;">
+  <ul class="sidebar-nav sitebar-default" style="background-color:#f5f5f5; padding:20px;">
+    <form action="/noise" method="POST">
+      <input type="hidden" name="paging"/>
+      <li>
+        <input id="date" name="date" type="text" class="datepicker" data-date-format="dd.mm.yyyy" value="{{params.begin}}"/>
+      </li>
+      <li>
+        <select name="period">
+          <option value="day" {% ifequal params.period "day" %}selected="selected"{% endifequal %}>Den</option>
+          <option value="week" {% ifequal params.period "week" %}selected="selected"{% endifequal %}>Týden</option>
+          <option value="month" {% ifequal params.period "month" %}selected="selected"{% endifequal %}>Měsíc</option>
+        </select>
+      </li>
+      {% for device in devices %}
+      <li><label title="{{device.description}}">
+        <input type="checkbox" name="devices" value="{{device.devEUI}}" {{device.checked}}>{{device.description}} {{device.devEUI}}
+      </label>  </li>
+      {% endfor %}
+      <li>
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Previous" onclick="previousPage();">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" aria-label="Next" onclick="nextPage();">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            <li><input class="btn btn-default btn-lg" type="submit" value="compute"></li>
+          </ul>
+        </nav>
+
+      </li>
+    </form>
+  </ul>
+</div>
+<!-- /#sidebar-wrapper -->
+
+<!-- Page Content -->
+<div id="right-pane">
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-12">
+
+              <div id="visualizationNoise"></div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-12">
+              <div id="visualizationErrors"></div>
+          </div>
+      </div>
+</div>
+
+{% endblock %}
+
+{% block page-scripts %}
+
+{% script "/js/moment-with-locales.js" %}
+{% script "/js/vis.min.js" %}
+{% script "/js/bootstrap-datepicker.min.js" %}
+{% script "/js/bootstrap-datepicker.cs.min.js" %}
+
+<script type="text/javascript">
+    function loadVis() {
+        var container = document.getElementById('visualizationNoise');
+        var items = {{cljItems|safe}};
+        var groupItems = {{groups|safe}};
+
+        var groups = new vis.DataSet(groupItems);
+
+        var dataset = new vis.DataSet(items);
+        var options = {
+            legend: true,
+            height: "400px",
+            start: "{{params.start}}",
+            end: "{{params.end}}",
+            locale: 'cs',
+            dataAxis: {left: {title: {text: "Hluk (db)"}}}
+        };
+        var Graph2d = new vis.Graph2d(container, dataset, groups, options);
+
+        var containerError = document.getElementById('visualizationErrors');
+        var itemsError = {{errorItems|safe}};
+        var groupError = {{groupsError|safe}};
+
+        var datasetError = new vis.DataSet(itemsError);
+        var optionsError = {
+            legend: true,
+            height: "400px",
+            start: "{{params.start}}",
+            end: "{{params.end}}",
+            locale: 'cs',
+            style:'points',
+            dataAxis: {left: {title: {text: "Nepovolené hodnoty hluku (db)"}}}
+        };
+        var Graph2dError = new vis.Graph2d(containerError, datasetError, groupError, optionsError);
+
+        $('.datepicker').datepicker({
+            language: "cs",
+            autoclose: true
+        });
+    }
+
+    function previousPage() {
+        $('[name="paging"]' ).val("previous");
+        $( "form" ).submit();
+    }
+
+    function nextPage() {
+        $('[name="paging"]' ).val("next");
+        $( "form" ).submit();
+    }
+
+    if(window.attachEvent) {
+        window.attachEvent('onload', loadVis);
+    } else {
+        if(window.onload) {
+            var curronload = window.onload;
+            var newonload = function(evt) {
+                curronload(evt);
+                loadVis(evt);
+            };
+            window.onload = newonload;
+        } else {
+            window.onload = loadVis();
+        }
+    }
+
+</script>
+
+{% endblock %}

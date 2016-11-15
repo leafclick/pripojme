@@ -9,7 +9,7 @@
             [pripojme.graph.devices :as dev])
   (:import (org.joda.time DateTime Days)))
 
-(def projects ["CRaTechnologyRoom" "Greenhouse20"])
+(def projects ["CRaTechnologyRoom" "Greenhouse20" "Noise"])
 
 (defn create-defaults []
   (let [today (.toDateTime (t/today-at-midnight))]
@@ -119,6 +119,32 @@
                  )
   )
 
+(defn noise-page [params devices]
+  (layout/render "noise.html"
+                 {:cljItems    (graph/construct-filtered-graph
+                                 (dev/filter-checked-devices devices
+                                                             (dev/add-groups-to-devices dev/devices-noise
+                                                                                        dev/noise-data)
+                                                             )
+                                 params
+                                 #(<= 40.0 (Double/parseDouble (:y %)) 100.0)
+                                 )
+                  :errorItems  (graph/construct-filtered-no-interpolation-graph
+                                 (dev/filter-checked-devices devices
+                                                             (dev/add-groups-to-devices dev/devices-noise
+                                                                                        dev/noise-data)
+                                                             )
+                                 params
+                                 (complement #(<= 40.0 (Double/parseDouble (:y %)) 100.0))
+                                 )
+                  :devices     (dev/check-devices devices dev/devices-noise)
+                  :groups      (graph/construct-groups dev/devices-noise)
+                  :groupsError (graph/construct-groups dev/devices-noise)
+                  :params      (params-to-web params)
+                  }
+                 )
+  )
+
 (defn greenhouse-page [params devices]
   (layout/render "greenhouse.html"
                  {:temperatureItems
@@ -168,6 +194,25 @@
                       params)}}
   )
 
+(defn noise-data [params devices]
+  {:body {:cljItems   (graph/construct-filtered-data
+                        (dev/filter-checked-devices devices
+                                                    (dev/add-groups-to-devices dev/devices-noise
+                                                                               dev/noise-data)
+                                                    )
+                        params
+                        #(<= 40.0 (:y %) 100.0)
+                        )
+          :errorItems (graph/construct-filtered-no-interpolation-data
+                        (dev/filter-checked-devices devices
+                                                    (dev/add-groups-to-devices dev/devices-noise
+                                                                               dev/noise-data)
+                                                    )
+                        params
+                        (complement #(<= 40.0 (:y %) 100.0))
+                        )}}
+  )
+
 (defn greenhouse-data [params devices]
   {:body {:temperatureItems
           (graph/construct-data
@@ -198,6 +243,9 @@
            (GET "/cratechroom" [] (cratechroom-page (create-defaults) (map #(%1 :devEUI) dev/devices-cratechroom)))
            (POST "/cratechroom" request (cratechroom-page (parse-imputs request) (parse-devices request)))
            (POST "/cratechroomData" request (cratechroom-data (parse-data-imputs request) (parse-devices request)))
+           (GET "/noise" [] (noise-page (create-defaults) (map #(%1 :devEUI) dev/devices-noise)))
+           (POST "/noise" request (noise-page (parse-imputs request) (parse-devices request)))
+           (POST "/noiseData" request (noise-data (parse-data-imputs request) (parse-devices request)))
            (GET "/greenhouse" [] (greenhouse-page (create-defaults) (map #(%1 :devEUI) dev/devices-greenhouse)))
            (POST "/greenhouse" request (greenhouse-page (parse-imputs request) (parse-devices request)))
            (POST "/greenhouseData" request (greenhouse-data (parse-data-imputs request) (parse-devices request)))

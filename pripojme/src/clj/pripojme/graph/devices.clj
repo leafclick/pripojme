@@ -79,6 +79,21 @@
     :vendor      "NA"}]
   )
 
+(def devices-noise
+  [{:devEUI      "0004A30B0019D0EA",
+    :graphId     0,
+    :projectId   "Noise",
+    :description "Hlukove cidlo - Namesti Bratri Synku",
+    :model       "DeSenseNoise",
+    :vendor      "Develict"}
+   {:devEUI      "0004A30B0019B046",
+    :projectId   "Noise",
+    :graphId     1,
+    :description "Hlukove cidlo - Open space CRA (Strahov)",
+    :model       "DeSenseNoise",
+    :vendor      "Develict"}]
+  )
+
 (def greenhouse-temp-data
   [{:devEUI "0004A30B001A180C" :column 1}
    {:devEUI "0004A30B0019BE42" :column 1}
@@ -97,6 +112,11 @@
    {:devEUI "0004A30B001A180C" :column 2}
    {:devEUI "0004A30B0019BE42" :column 2}
    {:devEUI "0004A30B00196841" :column 2}]
+  )
+
+(def noise-data
+  [{:devEUI "0004A30B0019D0EA" :column 1}
+   {:devEUI "0004A30B0019B046" :column 1}]
   )
 
 
