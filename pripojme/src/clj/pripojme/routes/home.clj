@@ -74,22 +74,25 @@
     )
   )
 
-(defn compute-data-period [^DateTime begin ^DateTime end]
-  (let [days (.getDays (Days/daysBetween begin end))]
-    (cond
-      (> days 7) :month
-      (> days 1) :week
-      :else :day)
-    )
+(defn compute-data-period [days]
+  (cond
+    (> days 7) :month
+    (> days 1) :week
+    :else :day)
+  )
+
+(defn days-between [^DateTime begin ^DateTime end]
+  (.getDays (Days/daysBetween begin end))
   )
 
 (defn parse-data-imputs [request]
   (let [visjs-formatter (f/formatter "yyyy-MM-dd'T'HH:mm:ss")
         begin (f/parse visjs-formatter (subs (get-in request [:params :start]) 0 19))
-        end (f/parse visjs-formatter (subs (get-in request [:params :end]) 0 19))]
+        end (f/parse visjs-formatter (subs (get-in request [:params :end]) 0 19))
+        days (days-between begin end)]
     {:begin  begin
-     :end    end
-     :period (compute-data-period begin end)}
+     :end    (if (= days 0) (.plusDays begin 1) end)
+     :period (compute-data-period days)}
     )
   )
 
