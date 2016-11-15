@@ -44,30 +44,30 @@
     )
   )
 
-(defn map-all-files-in-range [devices time-range index data]
+(defn map-all-files-in-range [devices time-range data]
   (if (empty? devices)
     data
     (let [device (first devices)
           content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
           interpolated-data (interpolate-data content time-range)]
-      (map-all-files-in-range (rest devices) time-range (inc index) (concat data (map-to-graph interpolated-data index)))))
+      (map-all-files-in-range (rest devices) time-range (concat data (map-to-graph interpolated-data (:graphId device))))))
   )
 
 (defn construct-graph [source time-range]
-  (wrap-data (map-all-files-in-range source time-range 0 []))
+  (wrap-data (map-all-files-in-range source time-range []))
   )
 
-(defn map-all-data-files-in-range [devices time-range index data]
+(defn map-all-data-files-in-range [devices time-range data]
   (if (empty? devices)
     data
     (let [device (first devices)
           content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
           interpolated-data (interpolate-data content time-range)]
-      (map-all-data-files-in-range (rest devices) time-range (inc index) (concat data (map-to-data interpolated-data index)))))
+      (map-all-data-files-in-range (rest devices) time-range (concat data (map-to-data interpolated-data (:graphId device))))))
   )
 
 (defn construct-data [source time-range]
-  (map-all-data-files-in-range source time-range 0 [])
+  (map-all-data-files-in-range source time-range [])
   )
 
 (defn devices-to-graph [devices]
