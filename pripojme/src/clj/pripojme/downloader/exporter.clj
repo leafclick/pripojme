@@ -17,6 +17,15 @@
     )
   )
 
+(defn path-to-weather-file []
+  (let [path (:weather-file env)]
+    (if (nil? path)
+      (path-to-file "weather-prague-2016.csv")
+      path
+      )
+    )
+  )
+
 (defn file-exists [filename]
   (.exists (io/as-file (path-to-file filename)))
   )
@@ -43,7 +52,7 @@
     (catch Exception e
       nil)))
 
-(defn read-from-csv-time-range [filename time-range]
+(defn read-from-csv-time-range [file time-range]
   (let [begin (:begin time-range)
         end (:end time-range)
         formatter (f/formatters :date-time-no-ms)]
@@ -51,7 +60,7 @@
       #(.isBefore (f/parse formatter (nth %1 0)) end)
       (drop-while
         #(.isBefore (f/parse formatter (nth %1 0)) begin)
-        (rest (read-from-csv (path-to-file filename))))
+        (rest (read-from-csv file)))
       )
     )
   )

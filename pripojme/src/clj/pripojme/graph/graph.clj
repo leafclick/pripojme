@@ -33,15 +33,18 @@
     )
   )
 
-(defn csv-name [device]
-  (str (:model device) "-" (:devEUI device) ".csv")
+(defn csv-file [device]
+  (if (= (:model device) "weather")
+    (exp/path-to-weather-file)
+    (exp/path-to-file (str (:model device) "-" (:devEUI device) ".csv"))
+    )
   )
 
 (defn map-all-files-in-range [devices time-range index data]
   (if (empty? devices)
     data
     (let [device (first devices)
-          content (map-from-csv (exp/read-from-csv-time-range (csv-name device) time-range) (:column device))
+          content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
           interpolated-data (interpolate-data content time-range)]
       (map-all-files-in-range (rest devices) time-range (inc index) (concat data (map-to-graph interpolated-data index)))))
   )
