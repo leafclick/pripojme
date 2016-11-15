@@ -20,7 +20,7 @@
                  [org.webjars/jquery "3.1.1"]
                  [org.webjars/visjs "4.8.2"]
                  [org.webjars.bower/momentjs "2.16.0"]
-                 [org.webjars.bower/bootstrap-datepicker "1.6.4"]
+                 [org.webjars.bower/bootstrap-datepicker "1.6.4" :exclusions [org.webjars.bower/jquery]]
                  [org.webjars/webjars-locator-jboss-vfs "0.1.0"]
                  [ring-middleware-format "0.7.0"]
                  [ring-webjars "0.1.1"]
