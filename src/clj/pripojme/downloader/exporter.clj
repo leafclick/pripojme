@@ -2,7 +2,8 @@
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [clj-time.format :as f]
-            [pripojme.config :refer [env]])
+            [pripojme.config :refer [env]]
+            [clojure.tools.logging :as log])
   )
 
 (defn path-to-file [filename]
@@ -46,11 +47,11 @@
   "Returns csv contents or nil if file can't be read."
   [filename]
   (try
-    (with-open [in-file (io/reader (path-to-file filename))]
+    (with-open [in-file (io/reader filename)]
       (doall
         (csv/read-csv in-file)))
     (catch Exception e
-      nil)))
+      (log/error "Can't read CSV file" filename ":" e))))
 
 (defn read-from-csv-time-range [file time-range]
   (let [begin (:begin time-range)
