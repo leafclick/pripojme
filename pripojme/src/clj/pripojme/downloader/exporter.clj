@@ -1,21 +1,34 @@
 (ns pripojme.downloader.exporter
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
-            [clj-time.format :as f])
+            [clj-time.format :as f]
+            [pripojme.config :refer [env]])
+  )
+
+(defn path-to-file [filename]
+  (let [path (:data-dir env)]
+    (if (nil? path)
+      filename
+      (if (.endsWith path "/")
+        (str path filename)
+        (str path "/" filename)
+        )
+      )
+    )
   )
 
 (defn file-exists [filename]
-  (.exists (io/as-file filename))
+  (.exists (io/as-file (path-to-file filename)))
   )
 
 (defn write-to-csv [filename data]
-  (with-open [out-file (io/writer filename)]
+  (with-open [out-file (io/writer (path-to-file filename))]
     (csv/write-csv out-file
                    data))
   )
 
 (defn append-to-csv [filename data]
-  (with-open [out-file (io/writer filename :append true)]
+  (with-open [out-file (io/writer (path-to-file filename) :append true)]
     (csv/write-csv out-file
                    data))
   )
@@ -24,7 +37,7 @@
   "Returns csv contents or nil if file can't be read."
   [filename]
   (try
-    (with-open [in-file (io/reader filename)]
+    (with-open [in-file (io/reader (path-to-file filename))]
       (doall
         (csv/read-csv in-file)))
     (catch Exception e
@@ -38,7 +51,7 @@
       #(.isBefore (f/parse formatter (nth %1 0)) end)
       (drop-while
         #(.isBefore (f/parse formatter (nth %1 0)) begin)
-        (rest (read-from-csv filename)))
+        (rest (read-from-csv (path-to-file filename))))
       )
     )
   )

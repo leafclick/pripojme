@@ -1,3 +1,4 @@
 {:production true
  :token "lalEH9j8oXC48RFf2pR0B57ZsZj68rS2"
+ :data-dir "/home/petr/tmp/"
  :port 3000}
