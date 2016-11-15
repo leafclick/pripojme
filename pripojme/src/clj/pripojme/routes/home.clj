@@ -98,7 +98,7 @@
 
 (defn parse-devices [request]
   (let [devices (get-in request [:params :devices])]
-    (if (seq? devices)
+    (if (coll? devices)
       devices
       [devices])
     )
@@ -169,27 +169,31 @@
   )
 
 (defn greenhouse-data [params devices]
-  {:body {:temperatureItems
-          (graph/construct-data
-            (dev/filter-checked-devices devices
-                                        (dev/add-groups-to-devices dev/devices-greenhouse
-                                                                   dev/greenhouse-temp-data)
-                                        )
-            params)
-          :lightItems
-          (graph/construct-data
-            (dev/filter-checked-devices devices
-                                        (dev/add-groups-to-devices dev/devices-greenhouse
-                                                                   dev/greenhouse-light-data)
-                                        )
-            params)
-          :humItems
-          (graph/construct-data
-            (dev/filter-checked-devices devices
-                                        (dev/add-groups-to-devices dev/devices-greenhouse
-                                                                   dev/greenhouse-hum-data)
-                                        )
-            params)}}
+  (do
+    (println params)
+    (println devices)
+    {:body {:temperatureItems
+            (graph/construct-data
+              (dev/filter-checked-devices devices
+                                          (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                     dev/greenhouse-temp-data)
+                                          )
+              params)
+            :lightItems
+            (graph/construct-data
+              (dev/filter-checked-devices devices
+                                          (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                     dev/greenhouse-light-data)
+                                          )
+              params)
+            :humItems
+            (graph/construct-data
+              (dev/filter-checked-devices devices
+                                          (dev/add-groups-to-devices dev/devices-greenhouse
+                                                                     dev/greenhouse-hum-data)
+                                          )
+              params)}}
+    )
   )
 
 (defroutes home-routes

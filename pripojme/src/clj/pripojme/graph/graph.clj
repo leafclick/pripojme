@@ -63,7 +63,7 @@
     (let [device (first devices)
           content (map-from-csv (exp/read-from-csv-time-range (csv-file device) time-range) (:column device))
           interpolated-data (interpolate-data content time-range)]
-      (map-all-files-in-range (rest devices) time-range (inc index) (concat data (map-to-data interpolated-data index)))))
+      (map-all-data-files-in-range (rest devices) time-range (inc index) (concat data (map-to-data interpolated-data index)))))
   )
 
 (defn construct-data [source time-range]
