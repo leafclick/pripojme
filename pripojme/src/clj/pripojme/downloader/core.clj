@@ -4,7 +4,7 @@
             [pripojme.downloader.dispatch :as disp]
             [pripojme.downloader.exporter :as exp]
             [pripojme.config :refer [env]]
-            )
+            [clojure.tools.logging :as log])
   )
 
 (defn fetch-projects []
@@ -114,14 +114,9 @@
 
 (defn parse-payload [model raw]
   (let [payloadHex (:payloadHex raw)]
-    (try
-      (conj {:timestamp (:timestamp raw)} (disp/parse-payload model payloadHex))
-      (catch Throwable e
-        (println (str "Caught e " e " for payload #" payloadHex "#"))
-        )
-      )
-    )
-  )
+    (if-let [payload (disp/parse-payload model payloadHex)]
+      (conj {:timestamp (:timestamp raw)} payload)
+      (log/warn [str "Malformed data for payload" model " #" payloadHex "#"]))))
 
 (defn parse-data [model rawData]
   (let [xf (comp (map (fn [raw] (parse-payload model raw)))

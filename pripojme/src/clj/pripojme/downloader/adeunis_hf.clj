@@ -111,11 +111,10 @@
   ["timestamp" "temperature" "coordinates" "battery" "rssi" "snr"])
 
 (defn parse-adeunis-hf [payload]
-  {:pre [(> (count payload) 2)]}
-  {:temperature (parse-temperature payload)
-   :coordinates (parse-coordinates payload)
-   :battery     (parse-battery payload)
-   :rssi        (parse-rssi payload)
-   :snr         (parse-snr payload)
-   }
-  )
+  (when (> (count payload) 2)
+    {:temperature (parse-temperature payload)
+     :coordinates (parse-coordinates payload)
+     :battery     (parse-battery payload)
+     :rssi        (parse-rssi payload)
+     :snr         (parse-snr payload)
+     }))

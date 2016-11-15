@@ -53,10 +53,9 @@
   ["timestamp" "temperature" "humidity" "snr" "battery"])
 
 (defn parse-dth [payload]
-  {:pre [(= (count payload) 18)]}
-  {:temperature (parse-temperature payload)
-   :humidity    (parse-humidity payload)
-   :snr         (parse-snr payload)
-   :battery     (parse-battery payload)
-   }
-  )
+  (when (= (count payload) 18)
+    {:temperature (parse-temperature payload)
+     :humidity    (parse-humidity payload)
+     :snr         (parse-snr payload)
+     :battery     (parse-battery payload)
+     }))

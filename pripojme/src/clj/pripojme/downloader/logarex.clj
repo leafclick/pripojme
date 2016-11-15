@@ -28,8 +28,7 @@
   ["timestamp" "active-consuption" "active-distribution"])
 
 (defn parse-logarex [payload]
-  {:pre [(= (count payload) 18)]}
-  {:active-consuption   (parse-active-consuption payload)
-   :active-distribution (parse-active-distribution payload)
-   }
-  )
+  (when (= (count payload) 18)
+    {:active-consuption   (parse-active-consuption payload)
+     :active-distribution (parse-active-distribution payload)
+     }))

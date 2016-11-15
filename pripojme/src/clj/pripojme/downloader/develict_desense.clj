@@ -103,49 +103,44 @@
   ["timestamp" "velocity" "temperature" "rssi" "snr" "battery"])
 
 (defn parse-desens [payload]
-  {:pre [(= (count payload) 18)]}
-  {:temperature (parse-temperature payload)
-   :humidity    (parse-humidity payload)
-   :rssi        (parse-rssi payload)
-   :snr         (parse-snr payload)
-   :battery     (parse-battery payload)
-   }
-  )
+  (when (= (count payload) 18)
+    {:temperature (parse-temperature payload)
+     :humidity    (parse-humidity payload)
+     :rssi        (parse-rssi payload)
+     :snr         (parse-snr payload)
+     :battery     (parse-battery payload)
+     }))
 
 (defn parse-desens-light [payload]
-  {:pre [(= (count payload) 14)]}
-  {:light   (parse-light payload)
-   :rssi    (parse-rssi payload)
-   :snr     (parse-snr payload)
-   :battery (parse-battery payload)
-   }
-  )
+  (when (= (count payload) 14)
+    {:light   (parse-light payload)
+     :rssi    (parse-rssi payload)
+     :snr     (parse-snr payload)
+     :battery (parse-battery payload)
+     }))
 
 (defn parse-desens-soil [payload]
-  {:pre [(= (count payload) 14)]}
-  {:moisture (parse-moisture payload)
-   :rssi     (parse-rssi payload)
-   :snr      (parse-snr payload)
-   :battery  (parse-battery payload)
-   }
-  )
+  (when (= (count payload) 14)
+    {:moisture (parse-moisture payload)
+     :rssi     (parse-rssi payload)
+     :snr      (parse-snr payload)
+     :battery  (parse-battery payload)
+     }))
 
 (defn parse-desens-noise [payload]
-  {:pre [(= (count payload) 14)]}
-  {:noise   (parse-noise payload)
-   :rssi    (parse-rssi payload)
-   :snr     (parse-snr payload)
-   :battery (parse-battery payload)
-   }
-  )
+  (when (= (count payload) 14)
+    {:noise   (parse-noise payload)
+     :rssi    (parse-rssi payload)
+     :snr     (parse-snr payload)
+     :battery (parse-battery payload)
+     }))
 
 (defn parse-desens-wind [payload]
-  {:pre [(= (count payload) 18)]}
-  {
-   :velocity    (parse-wind-velocity payload)
-   :temperature (parse-wind-temperature payload)
-   :rssi        (parse-rssi payload)
-   :snr         (parse-snr payload)
-   :battery     (parse-battery payload)
-   }
-  )
+  (when (= (count payload) 18)
+    {
+     :velocity    (parse-wind-velocity payload)
+     :temperature (parse-wind-temperature payload)
+     :rssi        (parse-rssi payload)
+     :snr         (parse-snr payload)
+     :battery     (parse-battery payload)
+     }))
