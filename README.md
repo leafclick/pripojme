@@ -14,6 +14,16 @@ To start a web server for the application, run:
 
     lein run
 
+application will be available on 
+
+    http://localhost:3000
+    
+you can fetch data by accessing
+    
+    http://localhost:3000/update
+    
+from web browser    
+
 ## License
 
-Copyright © 2016 leafclick s.r.o.
+GPLv3
