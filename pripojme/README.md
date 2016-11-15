@@ -1,8 +1,6 @@
-# pripojme
+# Czech IoT Summer Jam 2016
 
-generated using Luminus version "2.9.11.11"
-
-FIXME
+Prototype application for `api.pripoj.me`.
 
 ## Prerequisites
 
@@ -18,4 +16,4 @@ To start a web server for the application, run:
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 leafclick s.r.o.
